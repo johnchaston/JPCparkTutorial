@@ -29,7 +29,7 @@ library(vegan)
 library(cowplot)
 library(qiimePlots)
 
-source(file = url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/16sscripts/ancom_v2.0.R"))
+source(file = url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/16sscripts/ancom_v2.0.R"))
 
 ## code from Roland, possibly originally from Wickam, though wickam link is now broken. https://stackoverflow.com/questions/13649473/add-a-common-legend-for-combined-ggplots
 g_legend <- function(a.gplot){
@@ -151,23 +151,23 @@ file_path <- "call_hethom210-noA8B8-noW"
 mapper_file <- "call_mapper2.tsv"
 
   ## unweighted
-flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t") %>% mutate(X=as.character(X))
+flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t") %>% mutate(X=as.character(X))
 flies_unweighted_dm <- as.dist(flies_unweighted[,2:dim(flies_unweighted)[2]])
-flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
 
 fig1_Suw_permanova <- adonis(flies_unweighted_dm ~ genotype/genotype_class * sex + vial_model, flies_unifrac_table, permutations=1000)
 fig1_permSU <- tableGrob(round(fig1_Suw_permanova$aov.tab, 2), theme=ttheme_minimal())
 plot(fig1_permSU)
 
     ## weighted
-flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
 flies_weighted_dm <- as.dist(flies_weighted[,2:dim(flies_weighted)[2]])
 fig1_Sw_permanova <- adonis(flies_weighted_dm ~ genotype/genotype_class * sex + vial_model, flies_unifrac_table, permutations = 1000)
 fig1_permSW <- tableGrob(round(fig1_Sw_permanova$aov.tab, 2), theme=ttheme_minimal())
 plot(fig1_permSW)
 
     ## bray curtis
-flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
 flies_bc_dm <- as.dist(flies_bc[,2:dim(flies_bc)[2]])
 fig1_Sb_permanova <- adonis(flies_bc_dm ~ genotype/genotype_class * sex + vial_model, flies_unifrac_table, permutations = 1000)
 fig1_permSB <- tableGrob(round(fig1_Sb_permanova$aov.tab, 2), theme=ttheme_minimal())
@@ -190,8 +190,8 @@ plot(fig1_permSB)
 
   ## process data
     rm(otu_table)
-   otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/taxonomy-call19/taxonomy_forRc.csv")), by=c("X.OTU.ID"="Feature.ID"))
-    map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2c.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
+   otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forRc.csv")), by=c("X.OTU.ID"="Feature.ID"))
+    map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2c.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
 
   ## make melted OTU table
     otu_table$OTU <- as.character(otu_table$X.OTU.ID)
@@ -318,11 +318,11 @@ folder_name = paste0(file_path,"/weighted_unifrac")
 title_name_add <- "weighted Unifrac"
 legend_position = "none"
 
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2c.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2c.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -387,11 +387,11 @@ plot(plot_wuwlegend)
 folder_name = paste0(file_path,"/bray_curtis")
 title_name_add <- NULL
 legend_position <- "none"
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/bray_curtis_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/bray_curtis_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/bray_curtis_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/bray_curtis_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/bray_curtis_distance_matrix/distance-matrix.tsv"),header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/bray_curtis_distance_matrix/distance-matrix.tsv"),header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -436,11 +436,11 @@ plot_bc2016
 folder_name = paste0(file_path,"/unweighted_unifrac")
 title_name_add <- NULL
 
-   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/unweighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/unweighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/unweighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/unweighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -543,8 +543,8 @@ taxonomic_level = "order"
 taxonomic_level = "family"
 taxonomic_level = "X.OTU.ID"
 
-  otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8B8-noW/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% 
-    left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
+  otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% 
+    left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
   
   ref_names <- subset(colnames(otu_table), (colnames(otu_table)%in%c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species")==F))
   
@@ -577,7 +577,7 @@ taxonomic_level = "X.OTU.ID"
         
     } 
 
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2c.tsv"),comment.char = "", header=T, fill=T,sep="\t") %>% 
+  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2c.tsv"),comment.char = "", header=T, fill=T,sep="\t") %>% 
     dplyr::select_(.dots = list(the_id,var1,var2,var3,Group))
 
   phyl2 <- otu_table %>% 
@@ -708,22 +708,22 @@ mapper_file <- "call_mapper2.tsv"
 
 #setwd('~/Dropbox/Figure 1 files/noG_noArch_WolbIncluded/')
   ## unweighted
-flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t") %>% mutate(X=as.character(X))
+flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t") %>% mutate(X=as.character(X))
 flies_unweighted_dm <- as.dist(flies_unweighted[,2:dim(flies_unweighted)[2]])
-flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
 
 fig1_Suw_permanova <- adonis(flies_unweighted_dm ~ genotype * sex, flies_unifrac_table, permutations=1000)
 fig1_permSU <- tableGrob(round(fig1_Suw_permanova$aov.tab, 2), theme=ttheme_minimal())
 plot(fig1_permSU)
 
     ## weighted
-flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
 flies_weighted_dm <- as.dist(flies_weighted[,2:dim(flies_weighted)[2]])
 fig1_Sw_permanova <- adonis(flies_weighted_dm ~ genotype * sex, flies_unifrac_table, permutations = 1000)
 fig1_permSW <- tableGrob(round(fig1_Sw_permanova$aov.tab, 2), theme=ttheme_minimal())
 
     ## bray curtis
-flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
 flies_bc_dm <- as.dist(flies_bc[,2:dim(flies_bc)[2]])
 fig1_Sb_permanova <- adonis(flies_bc_dm ~ genotype * sex, flies_unifrac_table, permutations = 1000)
 fig1_permSB <- tableGrob(round(fig1_Sb_permanova$aov.tab, 2), theme=ttheme_minimal())
@@ -741,9 +741,9 @@ map_path = "-call19"
 legend_position = "bottom"
 taxonomic_level = "OTU"
 
- otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>%
-   left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
+ otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>%
+   left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
+  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
   
   ## make melted OTU table
   otu_table$OTU <- as.character(otu_table$X.OTU.ID)
@@ -868,11 +868,11 @@ folder_name = paste0(file_path,"/weighted_unifrac")
 title_name_add <- NULL
 legend_position = "none"
 
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t", fill=T), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t", fill=T), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -916,11 +916,11 @@ plot_w2016
 folder_name = paste0(file_path,"/bray_curtis")
 title_name_add <- NULL
 legend_position <- "none"
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -965,11 +965,11 @@ plot_bc2016
 folder_name = paste0(file_path,"/unweighted_unifrac")
 title_name_add <- NULL
 
-   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_hethom210-noA8/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -1086,9 +1086,9 @@ legend_position = "none"
 plot_order <- c("variabileacdb00a8aa6e6697516e395f5364fd46","fac07b2893c7b432c5c424ca5ea83548","Enterobacteriaceae","Enterococcus","f365eed4b4c884bf45ea125ca3786f2a","brevis162bdb2c7b5934c8bfddada185f8a786","Lactobacillus","Lactobacillaceae","5877dadce57b3bd826fe6bfa04a97b56", "7b0f05ead6d2e7c841505a2892f761f7", "c35bc9806adc8b858466c744cc35b1e5","Acetobacter")
 plot_color = c("black","magenta","green","green4","lavender","blueviolet","navy","blue1","blue3","red3","red4","red1","tomato1")
 
- otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/rarefied_table.txt"),comment.char="", header=T, sep="\t", fill=T, skip=1) %>%
-   left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
+ otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/rarefied_table.txt"),comment.char="", header=T, sep="\t", fill=T, skip=1) %>%
+   left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
+  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
   
   ## make melted OTU table
   otu_table$OTU <- as.character(otu_table$X.OTU.ID)
@@ -1209,11 +1209,11 @@ title_name_add <- NULL
 legend_position = "none"
 var2_line <- c("solid","dashed")
 
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/weighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/weighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/weighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/weighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/weighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/weighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -1298,11 +1298,11 @@ dev.off()
 folder_name = paste0(file_path,"/bray_curtis")
 title_name_add <- NULL
 legend_position <- "none"
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/bray_curtis_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/bray_curtis_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -1348,11 +1348,11 @@ folder_name = paste0(file_path,"/unweighted_unifrac")
 legend_position = "none"
 title_name_add <- NULL
 
-   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -1456,8 +1456,8 @@ taxonomic_level = "class"
 taxonomic_level = "order"
 taxonomic_level = "family"
 
-  otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_fecesonly/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% 
-    left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
+  otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% 
+    left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
   
   ref_names <- subset(colnames(otu_table), (colnames(otu_table)%in%c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species")==F))
   
@@ -1490,7 +1490,7 @@ taxonomic_level = "family"
         
     } 
 
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T,sep="\t") %>% 
+  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T,sep="\t") %>% 
     dplyr::select_(.dots = list(the_id,var1,var2,var3,Group))
 
   phyl2 <- otu_table %>% 
@@ -1538,9 +1538,9 @@ taxonomic_level = "family"
 ### Figure S8A
 ```{r Figure S8A, exercise=F, warning = F, message = F}
   ## unweighted
-flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t") %>% mutate(X=as.character(X))
+flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t") %>% mutate(X=as.character(X))
 flies_unweighted_dm <- as.dist(flies_unweighted[,2:dim(flies_unweighted)[2]])
-flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
 
 		## unweighted
 fig1_Suw_permanova <- adonis(flies_unweighted_dm ~ genotype * sample_type, flies_unifrac_table, permutations=1000)
@@ -1548,13 +1548,13 @@ fig1_permSU <- tableGrob(round(fig1_Suw_permanova$aov.tab, 2), theme=ttheme_mini
 plot(fig1_permSU)
 
     ## weighted
-flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
 flies_weighted_dm <- as.dist(flies_weighted[,2:dim(flies_weighted)[2]])
 fig1_Sw_permanova <- adonis(flies_weighted_dm ~ genotype * sample_type, flies_unifrac_table, permutations = 1000)
 fig1_permSW <- tableGrob(round(fig1_Sw_permanova$aov.tab, 2), theme=ttheme_minimal())
 
     ## bray curtis
-flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
 flies_bc_dm <- as.dist(flies_bc[,2:dim(flies_bc)[2]])
 fig1_Sb_permanova <- adonis(flies_bc_dm ~ genotype * sample_type, flies_unifrac_table, permutations = 1000)
 fig1_permSB <- tableGrob(round(fig1_Sb_permanova$aov.tab, 2), theme=ttheme_minimal())
@@ -1574,8 +1574,8 @@ taxonomic_level = "OTU"
 plot_order <- c("variabileacdb00a8aa6e6697516e395f5364fd46","Enterobacteriaceae","Enterococcus","f365eed4b4c884bf45ea125ca3786f2a","brevis162bdb2c7b5934c8bfddada185f8a786","Lactobacillus","Lactobacillaceae","5877dadce57b3bd826fe6bfa04a97b56","7b0f05ead6d2e7c841505a2892f761f7","c35bc9806adc8b858466c744cc35b1e5","Acetobacter")
 plot_color = c("black","magenta","green","lavender","navy","blue3","blue2","blue1","red3","red4","red2","tomato1")
 
- otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
+ otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
+  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
   
   ## make melted OTU table
   otu_table$OTU <- as.character(otu_table$X.OTU.ID)
@@ -1697,11 +1697,11 @@ title_name_add <- NULL
 legend_position = "none"
 var2_line <- c("dotted","solid","dotted","solid")
 
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -1743,11 +1743,11 @@ plot_w2016
 folder_name = paste0(file_path,"/bray_curtis")
 title_name_add <- NULL
 legend_position <- "none"
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
@@ -1790,11 +1790,11 @@ plot_bc2016
 folder_name = paste0(file_path,"/unweighted_unifrac")
 title_name_add <- NULL
 
-   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
   pc_values <- as.numeric(as.character(pc2[2,]))*100
   wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/core-metrics-results-call_feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/PC_parktutorial/master/PC_park_tutorial/PCParkTutorial/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
   
   uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
   
