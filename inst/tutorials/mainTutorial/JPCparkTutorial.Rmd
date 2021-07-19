@@ -7,6 +7,7 @@ runtime: shiny_prerendered
 ## start
 ```{r setup, include=FALSE}
 rm(list=ls())
+library(learnr)
 library(lme4)
 library(multcomp)
 library(dunn.test)
@@ -27,7 +28,6 @@ library(maps)
 library(dplyr)
 library(vegan)
 library(cowplot)
-library(qiimePlots)
 
 source(file = url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/16sscripts/ancom_v2.0.R"))
 
@@ -145,34 +145,7 @@ bash ../16sscripts/standard_qiime3.sh $name""_noW $name call_fecesonly 399 $mapp
 
 ## Figure 3
 ### Figure 3A
-```{r Figure_3A, exercise=F, warning = F, message = F}
-
-file_path <- "call_hethom210-noA8B8-noW"
-mapper_file <- "call_mapper2.tsv"
-
-  ## unweighted
-flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t") %>% mutate(X=as.character(X))
-flies_unweighted_dm <- as.dist(flies_unweighted[,2:dim(flies_unweighted)[2]])
-flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
-
-fig1_Suw_permanova <- adonis(flies_unweighted_dm ~ genotype/genotype_class * sex + vial_model, flies_unifrac_table, permutations=1000)
-fig1_permSU <- tableGrob(round(fig1_Suw_permanova$aov.tab, 2), theme=ttheme_minimal())
-plot(fig1_permSU)
-
-    ## weighted
-flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
-flies_weighted_dm <- as.dist(flies_weighted[,2:dim(flies_weighted)[2]])
-fig1_Sw_permanova <- adonis(flies_weighted_dm ~ genotype/genotype_class * sex + vial_model, flies_unifrac_table, permutations = 1000)
-fig1_permSW <- tableGrob(round(fig1_Sw_permanova$aov.tab, 2), theme=ttheme_minimal())
-plot(fig1_permSW)
-
-    ## bray curtis
-flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
-flies_bc_dm <- as.dist(flies_bc[,2:dim(flies_bc)[2]])
-fig1_Sb_permanova <- adonis(flies_bc_dm ~ genotype/genotype_class * sex + vial_model, flies_unifrac_table, permutations = 1000)
-fig1_permSB <- tableGrob(round(fig1_Sb_permanova$aov.tab, 2), theme=ttheme_minimal())
-plot(fig1_permSB)
-
+```{r Figure3A, exercise=T, warning = F, message = F, exercise.timelimit = 10000, eval = F}
 	## taxon plot 
     ## specify variables
     var1 = "genotype"
@@ -305,7 +278,7 @@ plot(taxon_legend)
 
 ### Figure 3B
 Make the PCoA plots
-```{r Figure 3B, exercise = F, warning =F, message = F}
+```{r Figure3B, exercise = T, warning =F, message = F,  exercise.timelimit = 10000, eval = F}
 
     ## set the variables
 var1 = "genotype"
@@ -314,7 +287,6 @@ var1_colors <-c("black","black","blue","blue","red","red")
 var2_shape <- c(15,0,15,0,15,0)
 legend_position = "none"
 var2_line <- c("solid","dotted","solid","dotted","solid","dotted")
-folder_name = paste0(file_path,"/weighted_unifrac")
 title_name_add <- "weighted Unifrac"
 legend_position = "none"
 
@@ -380,11 +352,31 @@ plot(plot_wuwlegend)
 
 ```
 
+### Figure 3 weighted Unifrac PERMANOVA
+```{r f3wu, exercise = T, warning =F, message = F,  exercise.timelimit = 10000, eval = F}
+flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_weighted_dm <- as.dist(flies_weighted[,2:dim(flies_weighted)[2]])
+flies_unifrac_table <- flies_weighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+
+fig1_Sw_permanova <- adonis(flies_weighted_dm ~ genotype * sex + vial_model, flies_unifrac_table, permutations = 1000)
+fig1_permSW <- tableGrob(round(fig1_Sw_permanova$aov.tab, 2), theme=ttheme_minimal())
+plot(fig1_permSW)
+```
+
 ## Figure S5 - extra PCoA for figure 3
 ### Figure S5A
-```{r Figure SA,exercise=F, warning = F, message = F}
+```{r FigureS5A,exercise=T, warning = F, message = F, exercise.timelimit = 10000, eval = F}
 
-folder_name = paste0(file_path,"/bray_curtis")
+    ## set the variables
+var1 = "genotype"
+var2 = "sex"
+var1_colors <-c("black","black","blue","blue","red","red")
+var2_shape <- c(15,0,15,0,15,0)
+legend_position = "none"
+var2_line <- c("solid","dotted","solid","dotted","solid","dotted")
+title_name_add <- "weighted Unifrac"
+legend_position = "none"
+
 title_name_add <- NULL
 legend_position <- "none"
   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/bray_curtis_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
@@ -431,9 +423,30 @@ plot_bc2016 <- ggplot(bc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var,
 plot_bc2016
 ```
 
+### Figure 3 Bray curtis PERMANOVA
+```{r f3bc, exercise = T, warning =F, message = F,  exercise.timelimit = 10000, eval = F}
+    ## bray curtis
+flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_bc_dm <- as.dist(flies_bc[,2:dim(flies_bc)[2]])
+flies_unifrac_table <- flies_bc %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+
+fig1_Sb_permanova <- adonis(flies_bc_dm ~ genotype * sex + vial_model, flies_unifrac_table, permutations = 1000)
+fig1_permSB <- tableGrob(round(fig1_Sb_permanova$aov.tab, 2), theme=ttheme_minimal())
+plot(fig1_permSB)
+
+```
+
 ### Figure S5B
-```{r Figure S5B, exercise=F, warning = F, message = F}
-folder_name = paste0(file_path,"/unweighted_unifrac")
+```{r FigureS5B, exercise=T, warning = F, message = F,  exercise.timelimit = 10000, eval = F}
+    ## set the variables
+var1 = "genotype"
+var2 = "sex"
+var1_colors <-c("black","black","blue","blue","red","red")
+var2_shape <- c(15,0,15,0,15,0)
+legend_position = "none"
+var2_line <- c("solid","dotted","solid","dotted","solid","dotted")
+title_name_add <- "weighted Unifrac"
+legend_position = "none"
 title_name_add <- NULL
 
    wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/unweighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
@@ -474,7 +487,7 @@ plot_uw2016 <- ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_v
          y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
          title = title_name_add) + 
     stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_line) 
-
+plot_uw2016
 legend_position = "bottom"
 
 plot_wuwlegend2 <- g_legend(ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
@@ -501,8 +514,19 @@ plot_wuwlegend2 <- g_legend(ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var
 plot(plot_wuwlegend2)
 ```
 
+### Figure 3 unweighted unifrac PERMANOVA
+```{r f3uu, exercise = T, warning =F, message = F,  exercise.timelimit = 10000, eval = F}
+flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t") %>% mutate(X=as.character(X))
+flies_unweighted_dm <- as.dist(flies_unweighted[,2:dim(flies_unweighted)[2]])
+flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+
+fig1_Suw_permanova <- adonis(flies_unweighted_dm ~ genotype * sex + vial_model, flies_unifrac_table, permutations=1000)
+fig1_permSU <- tableGrob(round(fig1_Suw_permanova$aov.tab, 2), theme=ttheme_minimal())
+plot(fig1_permSU)
+```
+
 ### print figure S5
-```{r Figure S5, exercise=F, warning = F, message = F, eval = F}
+```{r FigureS5print, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 jpeg(h=550, w=1100, paste0("gerald_figS5_625.jpg"), units = "px", quality = 0.9, pointsize = 1/300)
 grid.arrange(	
   plot_bc2016 + labs(tag = "A") + theme(axis.text = element_text(size = 24), axis.title = element_text(size = 32, face = "bold"), text = element_text(size = 42, face = "bold")),
@@ -513,14 +537,14 @@ grid.arrange(
   layout_matrix=rbind(		
     c(1,2),
     c(3,3)  
-    )
+  )
 )
 dev.off()
 
 ```
 
 ## Figure S6 - ANCOM for figure 3
-```{r Figure S6, exercise=F, warning = F, message = F }
+```{r FigureS6, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000 }
 
 var1 = "genotype"
 var2 = "genotype"
@@ -543,192 +567,166 @@ taxonomic_level = "order"
 taxonomic_level = "family"
 taxonomic_level = "X.OTU.ID"
 
-  otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% 
-    left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
-  
-  ref_names <- subset(colnames(otu_table), (colnames(otu_table)%in%c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species")==F))
-  
-    ## Cluster rows by taxonomy hierarchically 
-  taxon_vector <- c("kingdom","phylum","class","order","family","genus","species","X.OTU.ID")
-  taxon_number <- which(taxon_vector==taxonomic_level)
-  taxon_vector2 <- c()
-  for (i in 1:taxon_number) {
-    taxon_vector2 <- c(taxon_vector2,taxon_vector[i])
-  }
+otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/noW/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% 
+  left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
 
-  if(taxonomic_level!="X.OTU.ID") {
-    otu2 <- otu_table[,c("X.OTU.ID",taxon_vector2)] %>% 
-      tidyr::unite(clustered_taxonomy, (taxon_vector[1:length(taxon_vector2)])) %>%
-      mutate(clustered_taxonomy = as.character(clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = " ",replacement = "",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "^__",replacement = "__unassigned",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "___",replacement = "__unassigned_",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "__$",replacement = "__unassigned",x = clustered_taxonomy))
-  } else if (taxonomic_level == "X.OTU.ID") {
-    otu2 <- otu_table[,c("X.OTU.ID",taxon_vector2)] %>% 
-      mutate(OTUID2 = X.OTU.ID) %>%
-      tidyr::unite(clustered_taxonomy, c(taxon_vector[1:7],"OTUID2")) %>%
-      mutate(clustered_taxonomy = as.character(clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = " ",replacement = "",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "^__",replacement = "__unassigned",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "___",replacement = "__unassigned_",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "__$",replacement = "__unassigned",x = clustered_taxonomy)) %>%
-      dplyr::select(-X.OTU.ID.1)
-        
-    } 
+ref_names <- subset(colnames(otu_table), (colnames(otu_table)%in%c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species")==F))
 
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2c.tsv"),comment.char = "", header=T, fill=T,sep="\t") %>% 
-    dplyr::select_(.dots = list(the_id,var1,var2,var3,Group))
+## Cluster rows by taxonomy hierarchically 
+taxon_vector <- c("kingdom","phylum","class","order","family","genus","species","X.OTU.ID")
+taxon_number <- which(taxon_vector==taxonomic_level)
+taxon_vector2 <- c()
+for (i in 1:taxon_number) {
+  taxon_vector2 <- c(taxon_vector2,taxon_vector[i])
+}
 
-  phyl2 <- otu_table %>% 
-    inner_join(otu2, by = "X.OTU.ID") %>%
-    group_by(clustered_taxonomy) %>% 
-    summarize_at(ref_names,sum, na.rm=T)
-  rownames(phyl2) <- as.character(unlist(phyl2$clustered_taxonomy))
+if(taxonomic_level!="X.OTU.ID") {
+  otu2 <- otu_table[,c("X.OTU.ID",taxon_vector2)] %>% 
+    tidyr::unite(clustered_taxonomy, (taxon_vector[1:length(taxon_vector2)])) %>%
+    mutate(clustered_taxonomy = as.character(clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = " ",replacement = "",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "^__",replacement = "__unassigned",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "___",replacement = "__unassigned_",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "__$",replacement = "__unassigned",x = clustered_taxonomy))
+} else if (taxonomic_level == "X.OTU.ID") {
+  otu2 <- otu_table[,c("X.OTU.ID",taxon_vector2)] %>% 
+    mutate(OTUID2 = X.OTU.ID) %>%
+    tidyr::unite(clustered_taxonomy, c(taxon_vector[1:7],"OTUID2")) %>%
+    mutate(clustered_taxonomy = as.character(clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = " ",replacement = "",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "^__",replacement = "__unassigned",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "___",replacement = "__unassigned_",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "__$",replacement = "__unassigned",x = clustered_taxonomy)) %>%
+    dplyr::select(-X.OTU.ID.1)
   
-  phyl3 <- phyl2 %>% dplyr::select(-clustered_taxonomy) %>% t() %>% data.frame() 
-  colnames(phyl3) <- rownames(phyl2)
-  phyl3 <- mutate(phyl3, X.SampleID=rownames(phyl3))
-  phyl3$Sample.ID <- gsub("\\.","", phyl3$X.SampleID)
-  phyl3$Sample.ID <- gsub("_","", phyl3$Sample.ID)
-  map2$Sample.ID <- gsub("_","",map2$X.SampleID)
-  map2$Sample.ID <- gsub("-","",map2$Sample.ID)
-  
-  phyl5 <- phyl3 %>% dplyr::select(Sample.ID, everything()) %>% dplyr::select(-X.SampleID)
+} 
+
+map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2c.tsv"),comment.char = "", header=T, fill=T,sep="\t") %>% 
+  dplyr::select_(.dots = list(the_id,var1,var2,var3,Group))
+
+phyl2 <- otu_table %>% 
+  inner_join(otu2, by = "X.OTU.ID") %>%
+  group_by(clustered_taxonomy) %>% 
+  summarize_at(ref_names,sum, na.rm=T)
+rownames(phyl2) <- as.character(unlist(phyl2$clustered_taxonomy))
+
+phyl3 <- phyl2 %>% dplyr::select(-clustered_taxonomy) %>% t() %>% data.frame() 
+colnames(phyl3) <- rownames(phyl2)
+phyl3 <- mutate(phyl3, X.SampleID=rownames(phyl3))
+phyl3$Sample.ID <- gsub("\\.","", phyl3$X.SampleID)
+phyl3$Sample.ID <- gsub("_","", phyl3$Sample.ID)
+map2$Sample.ID <- gsub("_","",map2$X.SampleID)
+map2$Sample.ID <- gsub("-","",map2$Sample.ID)
+
+phyl5 <- phyl3 %>% dplyr::select(Sample.ID, everything()) %>% dplyr::select(-X.SampleID)
+colnames(phyl5)[1] <- "Sample.ID"
+
+map3 <- map2 %>% dplyr::select(Sample.ID, everything()) %>% dplyr::select(-X.SampleID) %>% filter(Sample.ID %in% phyl5$Sample.ID)
+colnames(map3)[1] <- "Sample.ID"
+
+phyl4 <- phyl3 %>% inner_join(map2, by=c("Sample.ID")) %>% mutate(Group = get(Group)) %>% droplevels()#%>% dplyr::select_(.dots = list(col1drop, col2drop, paste0("-",var1))) %>% dplyr::select(-sample2)
+rm(comparison_test)
+
+if (taxonomic_level == "X.OTU.ID") {
+  colnames(phyl5) <- paste0("X",colnames(phyl5))
   colnames(phyl5)[1] <- "Sample.ID"
+}
+
+comparison_test = ANCOM(otu_data = phyl5, 
+                        meta_data = map3, 
+                        main_var = main.var,  
+                        zero_cut = .9, 
+                        p_adjust_method = multcorr, 
+                        alpha = sig, 
+                        adj_formula = adj.formula, 
+                        rand_formula = NULL)
+
+#write.csv(comparison_test, paste("ancomexcel_",main.var,"_",file_path,"_",taxonomic_level,".csv",sep=""))
+dt1 <- data.frame(comparison_test) %>% filter(detected_0.9==T) %>% dplyr::select(otu_id)
+detected_taxa <- data.frame(OTU=unlist(sapply(X = dt1$otu_id, function(x) ifelse(substring(x,1,1)=="X",substring(x,2),substring(x,1)))))	%>% unlist() %>% unname() %>% as.character()
+
+otu3 <- otu_table[,c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species")]
+otu3$OTU <- as.character(otu3$X.OTU.ID)
+
+if(taxonomic_level!="OTU") {
+  otu3[,paste(taxonomic_level)] = gsub(" ","",otu3[,paste(taxonomic_level)])
+}
+
+otu5 <- otu3 %>% inner_join(otu2, by = "X.OTU.ID") %>% filter(clustered_taxonomy%in%detected_taxa) %>% distinct(get(taxonomic_level), .keep_all = T)
+
+extra_cols2 <- names(table(list(phyl4$Group)))
+extra_cols <- unname(c(extra_cols2,sapply(extra_cols2, function(x) paste0(x,"_sem"))))
+otu5[extra_cols] <- "NA"
+
+phyl3$sample2 <- gsub("\\.","", phyl3$X.SampleID)
+phyl3$sample2 <- gsub("_","", phyl3$sample2)
+i=1
+for (i in 1:length(detected_taxa)) {
   
-  map3 <- map2 %>% dplyr::select(Sample.ID, everything()) %>% dplyr::select(-X.SampleID) %>% filter(Sample.ID %in% phyl5$Sample.ID)
-  colnames(map3)[1] <- "Sample.ID"
-  
-  phyl4 <- phyl3 %>% inner_join(map2, by=c("Sample.ID")) %>% mutate(Group = get(Group)) %>% droplevels()#%>% dplyr::select_(.dots = list(col1drop, col2drop, paste0("-",var1))) %>% dplyr::select(-sample2)
-  rm(comparison_test)
-  
-  if (taxonomic_level == "X.OTU.ID") {
-    colnames(phyl5) <- paste0("X",colnames(phyl5))
-    colnames(phyl5)[1] <- "Sample.ID"
+  rm(phyl6, column_name)
+  column_name <- detected_taxa[i]
+  try(phyl6 <-phyl4 %>% mutate(rabun = get(column_name)/sum(otu_table[,2])) %>% dplyr::select(rabun, Group) %>% group_by(Group) %>% summarize(mean=mean(rabun), sem=sd(rabun)/sqrt(length(rabun))),T)
+  if(exists("phyl6")==F) {
+    try(phyl6 <- phyl4 %>% mutate(rabun = get(paste("X",column_name, sep=""))/sum(otu_table[,2])) %>% dplyr::select(rabun, Group) %>% group_by(Group) %>% summarize(mean=mean(rabun), sem=sd(rabun)/sqrt(length(rabun))))
   }
   
-  comparison_test = ANCOM(otu_data = phyl5, 
-              meta_data = map3, 
-              main_var = main.var,  
-              zero_cut = .9, 
-              p_adjust_method = multcorr, 
-              alpha = sig, 
-              adj_formula = adj.formula, 
-              rand_formula = NULL)
+  phyl6$Group <- factor(phyl6$Group, levels = c("w1118","park het","park homo"))
+  levels(phyl6$Group) <- c("Control",expression("Het "*italic(park^25),expression("Hom "*italic(park^25))))
   
-  #write.csv(comparison_test, paste("ancomexcel_",main.var,"_",file_path,"_",taxonomic_level,".csv",sep=""))
-  dt1 <- data.frame(comparison_test) %>% filter(detected_0.9==T) %>% dplyr::select(otu_id)
-  detected_taxa <- data.frame(OTU=unlist(sapply(X = dt1$otu_id, function(x) ifelse(substring(x,1,1)=="X",substring(x,2),substring(x,1)))))	%>% unlist() %>% unname() %>% as.character()
+  extra_cols2 <- names(table(list(phyl6$Group)))
   
-  otu3 <- otu_table[,c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species")]
-  otu3$OTU <- as.character(otu3$X.OTU.ID)
+  rm(t)
   
-  if(taxonomic_level!="OTU") {
-   otu3[,paste(taxonomic_level)] = gsub(" ","",otu3[,paste(taxonomic_level)])
-  }
-
-  otu5 <- otu3 %>% inner_join(otu2, by = "X.OTU.ID") %>% filter(clustered_taxonomy%in%detected_taxa) %>% distinct(get(taxonomic_level), .keep_all = T)
-
-  extra_cols2 <- names(table(list(phyl4$Group)))
-  extra_cols <- unname(c(extra_cols2,sapply(extra_cols2, function(x) paste0(x,"_sem"))))
-  otu5[extra_cols] <- "NA"
-  
-  phyl3$sample2 <- gsub("\\.","", phyl3$X.SampleID)
-  phyl3$sample2 <- gsub("_","", phyl3$sample2)
-  i=1
-  for (i in 1:length(detected_taxa)) {
-    
-    rm(phyl6, column_name)
-    column_name <- detected_taxa[i]
-    try(phyl6 <-phyl4 %>% mutate(rabun = get(column_name)/sum(otu_table[,2])) %>% dplyr::select(rabun, Group) %>% group_by(Group) %>% summarize(mean=mean(rabun), sem=sd(rabun)/sqrt(length(rabun))),T)
-    if(exists("phyl6")==F) {
-      try(phyl6 <- phyl4 %>% mutate(rabun = get(paste("X",column_name, sep=""))/sum(otu_table[,2])) %>% dplyr::select(rabun, Group) %>% group_by(Group) %>% summarize(mean=mean(rabun), sem=sd(rabun)/sqrt(length(rabun))))
-    }
-    
-    phyl6$Group <- factor(phyl6$Group, levels = c("w1118","park het","park homo"))
-    levels(phyl6$Group) <- c("Control",expression("Het "*italic(park^25),expression("Hom "*italic(park^25))))
-
-      extra_cols2 <- names(table(list(phyl6$Group)))
-    
-    rm(t)
-
-    assign(paste("p",i,sep="_"),value = ggplot(phyl6, aes(x=Group, y=mean, fill = "hello")) + 
-             geom_bar(position=position_dodge(), stat="identity") +
-             geom_errorbar(aes(ymin=mean+sem, ymax=mean-sem),
-                           width=.2,                    # Width of the error bars
-                           position=position_dodge(.9)) +
-             coord_cartesian(ylim=c((min(phyl6$mean-phyl6$sem)*.9),max(phyl6$mean+phyl6$sem)*1.3)) + 
-             theme(axis.text=element_text(size=14), 
-                   panel.background = element_blank(),
-                   axis.line = element_line(), 
-                   axis.ticks=element_line(), 
-                   axis.title=element_text(size=16),
-                   title=element_text(size=13)) +
-             labs(y="Relative abundance",x=var1,title=detected_taxa[i]) +
-             scale_x_discrete(labels = c("Control",expression("Het "*italic(park^25)),expression("Hom "*italic(park^25))))
-           )
+  assign(paste("p",i,sep="_"),value = ggplot(phyl6, aes(x=Group, y=mean, fill = "hello")) + 
+           geom_bar(position=position_dodge(), stat="identity") +
+           geom_errorbar(aes(ymin=mean+sem, ymax=mean-sem),
+                         width=.2,                    # Width of the error bars
+                         position=position_dodge(.9)) +
+           coord_cartesian(ylim=c((min(phyl6$mean-phyl6$sem)*.9),max(phyl6$mean+phyl6$sem)*1.3)) + 
+           theme(axis.text=element_text(size=14), 
+                 panel.background = element_blank(),
+                 axis.line = element_line(), 
+                 axis.ticks=element_line(), 
+                 axis.title=element_text(size=16),
+                 title=element_text(size=13)) +
+           labs(y="Relative abundance",x=var1,title=detected_taxa[i]) +
+           scale_x_discrete(labels = c("Control",expression("Het "*italic(park^25)),expression("Hom "*italic(park^25))))
+  )
   p_1
-    }
-  b <- .8
+}
+b <- .8
 
-  ## panel A
+## panel A
 p_1 + scale_fill_manual(values = "blue3") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "A") + labs(title = "Unassigned Lactobacillaceae ASV", x = "Genotype")
 
-  ## panel B
+## panel B
 p_2 + scale_fill_manual(values = "blue3") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "B") + labs(title = "Unassigned Lactobacillaceae ASV", x = "Genotype")
 
-  ## panel C
+## panel C
 p_3 + scale_fill_manual(values = "blue1") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "C") + labs(title = "Unassigned Lactobacillus ASV", x = "Genotype")
 
-  ## panel D
-  p_4 + scale_fill_manual(values = "navy") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "D") + labs(title = "Lactobacillus brevis", x = "Genotype")
-  
-  ## panel E
-  p_6 + scale_fill_manual(values = "red3") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "E") + labs(title = "Unassigned Acetobacter ASV", x = "Genotype")
-  
-  ## panel F
-  p_7 + scale_fill_manual(values = "red4") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "F") + labs(title = "Unassigned Acetobacter ASV", x = "Genotype")
-  
-  ## panel G
-  p_8 + scale_fill_manual(values = "red1") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "G") + labs(title = "Unassigned Acetobacter ASV", x = "Genotype")
-  
-  ## panel H
-  p_5 + scale_fill_manual(values = "tomato1") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "H") + labs(title = "Unassigned Acetobacter ASV", x = "Genotype")
+## panel D
+p_4 + scale_fill_manual(values = "navy") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "D") + labs(title = "Lactobacillus brevis", x = "Genotype")
+
+## panel E
+p_6 + scale_fill_manual(values = "red3") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "E") + labs(title = "Unassigned Acetobacter ASV", x = "Genotype")
+
+## panel F
+p_7 + scale_fill_manual(values = "red4") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "F") + labs(title = "Unassigned Acetobacter ASV", x = "Genotype")
+
+## panel G
+p_8 + scale_fill_manual(values = "red1") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "G") + labs(title = "Unassigned Acetobacter ASV", x = "Genotype")
+
+## panel H
+p_5 + scale_fill_manual(values = "tomato1") + theme(legend.position = "none", plot.tag = element_text(size = 24, face = "bold")) + labs(tag = "H") + labs(title = "Unassigned Acetobacter ASV", x = "Genotype")
 
 ```
 
 ## Figure S4 - Figure 3 + Wolbachia
 ### Figure S4A
-```{r Figure S4, exercise=F, warning = F, message = F}
+```{r FigureS4, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 
-setwd('~/Dropbox/sequencing/Nov2019/')
-file_path <- "call_hethom210-noA8"
-mapper_file <- "call_mapper2.tsv"
-
-#setwd('~/Dropbox/Figure 1 files/noG_noArch_WolbIncluded/')
-  ## unweighted
-flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t") %>% mutate(X=as.character(X))
-flies_unweighted_dm <- as.dist(flies_unweighted[,2:dim(flies_unweighted)[2]])
-flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
-
-fig1_Suw_permanova <- adonis(flies_unweighted_dm ~ genotype * sex, flies_unifrac_table, permutations=1000)
-fig1_permSU <- tableGrob(round(fig1_Suw_permanova$aov.tab, 2), theme=ttheme_minimal())
-plot(fig1_permSU)
-
-    ## weighted
-flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
-flies_weighted_dm <- as.dist(flies_weighted[,2:dim(flies_weighted)[2]])
-fig1_Sw_permanova <- adonis(flies_weighted_dm ~ genotype * sex, flies_unifrac_table, permutations = 1000)
-fig1_permSW <- tableGrob(round(fig1_Sw_permanova$aov.tab, 2), theme=ttheme_minimal())
-
-    ## bray curtis
-flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
-flies_bc_dm <- as.dist(flies_bc[,2:dim(flies_bc)[2]])
-fig1_Sb_permanova <- adonis(flies_bc_dm ~ genotype * sex, flies_unifrac_table, permutations = 1000)
-fig1_permSB <- tableGrob(round(fig1_Sb_permanova$aov.tab, 2), theme=ttheme_minimal())
-
-		## taxon plot 
+## taxon plot 
 var1 = "genotype"
 var2 = "sex"
 taxonomic_level = "order"
@@ -741,109 +739,109 @@ map_path = "-call19"
 legend_position = "bottom"
 taxonomic_level = "OTU"
 
- otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>%
-   left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
-  
-  ## make melted OTU table
-  otu_table$OTU <- as.character(otu_table$X.OTU.ID)
-  otu2 <- otu_table[,c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species","OTU")]
-  otu2$OTU <- as.character(otu2$OTU)
-  melted_table <- data.frame(OTU_ID=character(),Count=integer(), Sample=character(), stringsAsFactors = F)
-  for (i in 2:(dim(otu_table)[2]-7-1)) {
-    rm(new_table)
-    new_table <- data.frame(OTU=as.character(otu_table$OTU),Count=as.integer(otu_table[,i]),Sample=as.character(colnames(otu_table)[i]), stringsAsFactors = F)
-    melted_table <- rbind(melted_table, new_table)
-  }
-  
-  ## start merging
-  melted_table_no0 <- melted_table %>% filter(Count>-1)
-  mt0 <- melted_table_no0 %>% inner_join(otu2, by=c("OTU"="X.OTU.ID"))
-  mt0$sample2 <- gsub("\\.","", mt0$Sample)
-  mt0$sample2 <- gsub("_","", mt0$sample2)
-  map2$sample2 <- gsub("_","",map2$X.SampleID)
-  map2$sample2 <- gsub("-","",map2$sample2)
-  mt1 <- mt0 %>% inner_join(map2)
-  mt2 <- mt1 %>% arrange(phylum, class,order,family,genus,species,OTU)
-  mt2$sort_order <- c(1:dim(mt2)[1])
-  mt2$class <- paste(mt2$phylum, mt2$class,sep="_")
-  mt2$order <- paste(mt2$class, mt2$order,sep="_")
-  mt2$family <- paste(mt2$order, mt2$family,sep="_")
-  mt2$genus <- paste(mt2$family, mt2$genus,sep="_")
-  mt2$species <- paste(mt2$genus, mt2$species,sep="_")
-  mt2$OTU <- paste(mt2$species, mt2$OTU,sep="_")
-  
-  ## make the interactive variable
-  mt2$twovar <- paste(mt2[,var1], mt2[,var2],sep="-")
+otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>%
+  left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
+map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
 
-  ## find the rare taxa
-  rare_taxa <- mt2 %>% group_by_(.dots = taxonomic_level) %>% summarize(phylum.abun=sum(Count)) %>% mutate(rpa = phylum.abun / sum(phylum.abun)) %>% filter(rpa<=rpa_in_chart) %>% select_(.dots = taxonomic_level) %>% unlist
-  rt2 <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames("paste('other')", taxonomic_level))
-  
-  ## find the abundant taxa
-  abun_taxa <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) %>% data.frame()
-  
-  abundant_taxa <- names(table(list(abun_taxa[,paste(taxonomic_level)])))
-  
+## make melted OTU table
+otu_table$OTU <- as.character(otu_table$X.OTU.ID)
+otu2 <- otu_table[,c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species","OTU")]
+otu2$OTU <- as.character(otu2$OTU)
+melted_table <- data.frame(OTU_ID=character(),Count=integer(), Sample=character(), stringsAsFactors = F)
+for (i in 2:(dim(otu_table)[2]-7-1)) {
+  rm(new_table)
+  new_table <- data.frame(OTU=as.character(otu_table$OTU),Count=as.integer(otu_table[,i]),Sample=as.character(colnames(otu_table)[i]), stringsAsFactors = F)
+  melted_table <- rbind(melted_table, new_table)
+}
+
+## start merging
+melted_table_no0 <- melted_table %>% filter(Count>-1)
+mt0 <- melted_table_no0 %>% inner_join(otu2, by=c("OTU"="X.OTU.ID"))
+mt0$sample2 <- gsub("\\.","", mt0$Sample)
+mt0$sample2 <- gsub("_","", mt0$sample2)
+map2$sample2 <- gsub("_","",map2$X.SampleID)
+map2$sample2 <- gsub("-","",map2$sample2)
+mt1 <- mt0 %>% inner_join(map2)
+mt2 <- mt1 %>% arrange(phylum, class,order,family,genus,species,OTU)
+mt2$sort_order <- c(1:dim(mt2)[1])
+mt2$class <- paste(mt2$phylum, mt2$class,sep="_")
+mt2$order <- paste(mt2$class, mt2$order,sep="_")
+mt2$family <- paste(mt2$order, mt2$family,sep="_")
+mt2$genus <- paste(mt2$family, mt2$genus,sep="_")
+mt2$species <- paste(mt2$genus, mt2$species,sep="_")
+mt2$OTU <- paste(mt2$species, mt2$OTU,sep="_")
+
+## make the interactive variable
+mt2$twovar <- paste(mt2[,var1], mt2[,var2],sep="-")
+
+## find the rare taxa
+rare_taxa <- mt2 %>% group_by_(.dots = taxonomic_level) %>% summarize(phylum.abun=sum(Count)) %>% mutate(rpa = phylum.abun / sum(phylum.abun)) %>% filter(rpa<=rpa_in_chart) %>% select_(.dots = taxonomic_level) %>% unlist
+rt2 <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames("paste('other')", taxonomic_level))
+
+## find the abundant taxa
+abun_taxa <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) %>% data.frame()
+
+abundant_taxa <- names(table(list(abun_taxa[,paste(taxonomic_level)])))
+
 plot_color = c("black","magenta","green","blue3","blue2","blue1","red3","red2","tomato1","cyan")
-  plot_order <- c("variabileacdb00a8aa6e6697516e395f5364fd46","fac07b2893c7b432c5c424ca5ea83548","Enterococcus","f365eed4b4c884bf45ea125ca3786f2a","brevis162bdb2c7b5934c8bfddada185f8a786","Lactobacillus","Lactobacillaceae","5877dadce57b3bd826fe6bfa04a97b56","c35bc9806adc8b858466c744cc35b1e5","Acetobacter","016ccb36916408f0233910292d89a572")
+plot_order <- c("variabileacdb00a8aa6e6697516e395f5364fd46","fac07b2893c7b432c5c424ca5ea83548","Enterococcus","f365eed4b4c884bf45ea125ca3786f2a","brevis162bdb2c7b5934c8bfddada185f8a786","Lactobacillus","Lactobacillaceae","5877dadce57b3bd826fe6bfa04a97b56","c35bc9806adc8b858466c744cc35b1e5","Acetobacter","016ccb36916408f0233910292d89a572")
 
-  for(i in 1:length(abundant_taxa)) {
-    try(space_split_vector <- strsplit(abundant_taxa[i], split = " "))
-    try(while (paste(tail(strsplit(tail(space_split_vector[[1]], 1),split = "")[[1]], 2), collapse="") == "__") {
-      space_split_vector[[1]] <- head(space_split_vector[[1]], -1); space_split_vector[[1]]
-    })
-    try(abundant_taxa[i] <- gsub(strsplit(tail(space_split_vector[[1]],1), "__")[[1]][2], pattern = "_",replacement = ""))
-  }
-  
-  abun_taxa <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id, taxonomic_level)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames(paste("abundant_taxa"), taxonomic_level)) %>% group_by_(.dots=list(var1,var2, the_two_var, the_id, taxonomic_level))
-  
-  ## merge the two into a new file
-  rta <- rt2 %>% bind_rows(abun_taxa) %>% group_by(twovar) %>% mutate(rpa = phylum.abun / read_depth) %>% filter(rpa>0) %>% droplevels()%>%dplyr::mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) #%>% mutate_(.dots=setNames(factor(rta[,paste(taxonomic_level)], levels=c("other",plot_order)), taxonomic_level))
-  
-  if(length(plot_order) == 1) {
-    plot_order <- abundant_taxa
-  }
-  
-  rta$genus2 <- unlist(rta[,paste0(taxonomic_level)])
-  rta$genus2 <- factor(rta$genus2,levels=c("other",plot_order))
-  
-  if(length(plot_color) == 1) {
-    plot_color <- c(rep("red", length(table(list(rta$genus2)))))
-  }
+for(i in 1:length(abundant_taxa)) {
+  try(space_split_vector <- strsplit(abundant_taxa[i], split = " "))
+  try(while (paste(tail(strsplit(tail(space_split_vector[[1]], 1),split = "")[[1]], 2), collapse="") == "__") {
+    space_split_vector[[1]] <- head(space_split_vector[[1]], -1); space_split_vector[[1]]
+  })
+  try(abundant_taxa[i] <- gsub(strsplit(tail(space_split_vector[[1]],1), "__")[[1]][2], pattern = "_",replacement = ""))
+}
 
-  rta$genotype2 <- factor(rta$genotype, levels = c("w1118","park het","park homo"))
- levels(rta$genotype2) <- c("Control", expression("Het "*italic(park^25)), expression("Hom "*italic(park^25)))
+abun_taxa <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id, taxonomic_level)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames(paste("abundant_taxa"), taxonomic_level)) %>% group_by_(.dots=list(var1,var2, the_two_var, the_id, taxonomic_level))
+
+## merge the two into a new file
+rta <- rt2 %>% bind_rows(abun_taxa) %>% group_by(twovar) %>% mutate(rpa = phylum.abun / read_depth) %>% filter(rpa>0) %>% droplevels()%>%dplyr::mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) #%>% mutate_(.dots=setNames(factor(rta[,paste(taxonomic_level)], levels=c("other",plot_order)), taxonomic_level))
+
+if(length(plot_order) == 1) {
+  plot_order <- abundant_taxa
+}
+
+rta$genus2 <- unlist(rta[,paste0(taxonomic_level)])
+rta$genus2 <- factor(rta$genus2,levels=c("other",plot_order))
+
+if(length(plot_color) == 1) {
+  plot_color <- c(rep("red", length(table(list(rta$genus2)))))
+}
+
+rta$genotype2 <- factor(rta$genotype, levels = c("w1118","park het","park homo"))
+levels(rta$genotype2) <- c("Control", expression("Het "*italic(park^25)), expression("Hom "*italic(park^25)))
 
 legend_position = "none"
 
 #####
 plot_2016 <- ggplot(rta, aes(x = X.SampleID, y = rpa, fill = genus2)) + 
-    facet_grid(.~genotype2 * sex , drop = TRUE, space = "free", scales = "free", labeller = label_parsed) +   
-    facet_wrap(.~ genotype2 * sex, strip.position = "bottom", scales = "free_x", nrow = 1, labeller = label_parsed) + 
-    geom_bar(stat = "identity", width = 1) +
-    scale_fill_manual(values=plot_color, labels = c("Other",
-                                                    bquote(paste(italic(C.)," ",italic(variabile))),
-                                                    expression(paste("Pasteurellales")),
-#                                                    expression(paste("Enterococcus")),
-#                                                    expression(paste("Leuconostoc")),
-                                                    expression(paste(italic(L.)," ",italic(brevis))),
-                                                    expression(paste(italic(Lactobacillus))),
-                                                   "Lactobacillaceae ASVs 1 and 2",
-                                                    expression(paste(italic(Acetobacter)," ASV1")),
-  #                                                  expression(paste(italic(Acetobacter)," ASV2")),
-                                                    expression(paste(italic(Acetobacter)," ASV3")),
-                                                    expression(paste(italic(Acetobacter)," ASV4")),
-                                                    expression(paste(italic(Wolbachia)))
-                                                    ), 
-                      name = NULL)+
-    theme_cowplot() + 
-    theme(legend.position = legend_position,
-          axis.text.x = element_blank(),
-          strip.background = element_rect(fill = "white"),
-          legend.text.align = 0)+
-#  guide = guide_legend(label.position = "left") +
-    ylab("Fractional abundance") +
+  facet_grid(.~genotype2 * sex , drop = TRUE, space = "free", scales = "free", labeller = label_parsed) +   
+  facet_wrap(.~ genotype2 * sex, strip.position = "bottom", scales = "free_x", nrow = 1, labeller = label_parsed) + 
+  geom_bar(stat = "identity", width = 1) +
+  scale_fill_manual(values=plot_color, labels = c("Other",
+                                                  bquote(paste(italic(C.)," ",italic(variabile))),
+                                                  expression(paste("Pasteurellales")),
+                                                  #                                                    expression(paste("Enterococcus")),
+                                                  #                                                    expression(paste("Leuconostoc")),
+                                                  expression(paste(italic(L.)," ",italic(brevis))),
+                                                  expression(paste(italic(Lactobacillus))),
+                                                  "Lactobacillaceae ASVs 1 and 2",
+                                                  expression(paste(italic(Acetobacter)," ASV1")),
+                                                  #                                                  expression(paste(italic(Acetobacter)," ASV2")),
+                                                  expression(paste(italic(Acetobacter)," ASV3")),
+                                                  expression(paste(italic(Acetobacter)," ASV4")),
+                                                  expression(paste(italic(Wolbachia)))
+  ), 
+  name = NULL)+
+  theme_cowplot() + 
+  theme(legend.position = legend_position,
+        axis.text.x = element_blank(),
+        strip.background = element_rect(fill = "white"),
+        legend.text.align = 0)+
+  #  guide = guide_legend(label.position = "left") +
+  ylab("Fractional abundance") +
   xlab("samples") #+ labs (tag = "A")
 plot_2016
 
@@ -857,182 +855,237 @@ plot(taxon_legend)
 ```
 
 ### Figure S4B
-```{r Figure S4B, exercise=F, warning = F, message = F}
+```{r FigureS4B, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
 var1 = "genotype"
 var2 = "sex"
 var1_colors <-c("black","black","blue","blue","red","red")
 var2_shape <- c(15,0,15,0,15,0)
 legend_position = "none"
 var2_line <- c("solid","dotted","solid","dotted","solid","dotted")
-folder_name = paste0(file_path,"/weighted_unifrac")
 title_name_add <- NULL
 legend_position = "none"
 
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
-  pc_values <- as.numeric(as.character(pc2[2,]))*100
-  wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t", fill=T), by=c("X"="X.SampleID"))
-  
-  uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
-  
-  uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
-  uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
-  
-  var1_table <- table(list(uwmpc_all[,var1]))
-  var2_table <- table(list(uwmpc_all[,var2]))
- 
-  uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_F","w1118_M","park het_F","park het_M","park homo_F","park homo_M"))
-  levels(uwmpc_all$two_var) <- c("Control F","Control M",expression("Het "*italic(park^25)*" F"), expression("Het "*italic(park^25)*" M"), expression("Hom "*italic(park^25)*" F"), expression("Hom "*italic(park^25)*" M"))
+wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+pc_values <- as.numeric(as.character(pc2[2,]))*100
+wfpc <- wfpc[,1:4] 
+fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t", fill=T), by=c("X"="X.SampleID"))
 
-  twovar_table <- table(list(uwmpc_all$two_var))
+uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
+
+uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
+uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
+
+var1_table <- table(list(uwmpc_all[,var1]))
+var2_table <- table(list(uwmpc_all[,var2]))
+
+uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_F","w1118_M","park het_F","park het_M","park homo_F","park homo_M"))
+levels(uwmpc_all$two_var) <- c("Control F","Control M",expression("Het "*italic(park^25)*" F"), expression("Het "*italic(park^25)*" M"), expression("Hom "*italic(park^25)*" F"), expression("Hom "*italic(park^25)*" M"))
+
+twovar_table <- table(list(uwmpc_all$two_var))
 
 plot_w2016 <- ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = NULL) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_line)
+  geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+  scale_color_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
+  scale_fill_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
+  scale_shape_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_shape) + 
+  #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+  #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+  theme(axis.text=element_text(size=12), 
+        panel.background = element_blank(), 
+        axis.line = element_line(), 
+        axis.ticks=element_line(), 
+        axis.title=element_text(size=14),	
+        #           title=element_text(size=16),
+        legend.position=legend_position,
+        plot.title = element_text(size=16, hjust=0))+
+  labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+       y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+       title = NULL) + 
+  stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_line)
 
 plot_w2016
 ```
 
-### Figure S4C
-```{r Figure S4C, exercise=F, warning = F, message = F}
+### Figure S4 weighted Unifrac PERMANOVA
+```{r fs4wu, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+## weighted
+flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_weighted_dm <- as.dist(flies_weighted[,2:dim(flies_weighted)[2]])
+flies_unifrac_table <- flies_weighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
 
-folder_name = paste0(file_path,"/bray_curtis")
-title_name_add <- NULL
-legend_position <- "none"
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
-  pc_values <- as.numeric(as.character(pc2[2,]))*100
-  wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
-  
-  uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
-  
-  uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
-  uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
-  
-  var1_table <- table(list(uwmpc_all[,var1]))
-  var2_table <- table(list(uwmpc_all[,var2]))
- 
-  uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_F","w1118_M","park het_F","park het_M","park homo_F","park homo_M"))
-  
-  levels(uwmpc_all$two_var) <- c("Control F","Control M",expression("Het "*italic(park^25)*" F"), expression("Het "*italic(park^25)*" M"), expression("Hom "*italic(park^25)*" F"), expression("Hom "*italic(park^25)*" M"))
+fig1_Sw_permanova <- adonis(flies_weighted_dm ~ genotype * sex, flies_unifrac_table, permutations = 1000)
+fig1_permSW <- tableGrob(round(fig1_Sw_permanova$aov.tab, 2), theme=ttheme_minimal())
+plot(fig1_permSW)
 
-  twovar_table <- table(list(uwmpc_all$two_var))
-
-  bc_all <- uwmpc_all
-
-plot_bc2016 <- ggplot(bc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_line)
-plot_bc2016
 ```
 
-### Figure S4D
-```{r Figure S4D, exercise=F, warning = F, message = F}
-folder_name = paste0(file_path,"/unweighted_unifrac")
+### Figure S4C
+```{r FigureS4C, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+var1 = "genotype"
+var2 = "sex"
+var1_colors <-c("black","black","blue","blue","red","red")
+var2_shape <- c(15,0,15,0,15,0)
+legend_position = "none"
+var2_line <- c("solid","dotted","solid","dotted","solid","dotted")
+title_name_add <- NULL
+legend_position = "none"
+
 title_name_add <- NULL
 
-   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
-  pc_values <- as.numeric(as.character(pc2[2,]))*100
-  wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
-  
-  uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
-  
-  uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
-  uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
-  
-  var1_table <- table(list(uwmpc_all[,var1]))
-  var2_table <- table(list(uwmpc_all[,var2]))
- 
-  uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_F","w1118_M","park het_F","park het_M","park homo_F","park homo_M"))
-  
-  levels(uwmpc_all$two_var) <- c("Control F","Control M",expression("Het "*italic(park^25)*" F"), expression("Het "*italic(park^25)*" M"), expression("Hom "*italic(park^25)*" F"), expression("Hom "*italic(park^25)*" M"))
+wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+pc_values <- as.numeric(as.character(pc2[2,]))*100
+wfpc <- wfpc[,1:4] 
+fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
 
-  twovar_table <- table(list(uwmpc_all$two_var))
+uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
+
+uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
+uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
+
+var1_table <- table(list(uwmpc_all[,var1]))
+var2_table <- table(list(uwmpc_all[,var2]))
+
+uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_F","w1118_M","park het_F","park het_M","park homo_F","park homo_M"))
+
+levels(uwmpc_all$two_var) <- c("Control F","Control M",expression("Het "*italic(park^25)*" F"), expression("Het "*italic(park^25)*" M"), expression("Hom "*italic(park^25)*" F"), expression("Hom "*italic(park^25)*" M"))
+
+twovar_table <- table(list(uwmpc_all$two_var))
 
 plot_uw2016 <- ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_line) 
-
+  geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+  scale_color_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
+  scale_fill_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
+  scale_shape_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_shape) + 
+  #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+  #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+  theme(axis.text=element_text(size=12), 
+        panel.background = element_blank(), 
+        axis.line = element_line(), 
+        axis.ticks=element_line(), 
+        axis.title=element_text(size=14),	
+        #           title=element_text(size=16),
+        legend.position=legend_position,
+        plot.title = element_text(size=16, hjust=0))+
+  labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+       y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+       title = title_name_add) + 
+  stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_line) 
+plot_uw2016 
 legend_position = "bottom"
 
 plot_wuwlegend <- g_legend(ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=4) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_line) + theme(legend.text = element_text(size = 24)) +
-      guides(col = guide_legend(nrow = 3, byrow = T))
-  )
+                             geom_point(alpha = 1, size=4) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+                             scale_color_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
+                             scale_fill_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
+                             scale_shape_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_shape) + 
+                             #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+                             #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+                             theme(axis.text=element_text(size=12), 
+                                   panel.background = element_blank(), 
+                                   axis.line = element_line(), 
+                                   axis.ticks=element_line(), 
+                                   axis.title=element_text(size=14),	
+                                   #           title=element_text(size=16),
+                                   legend.position=legend_position,
+                                   plot.title = element_text(size=16, hjust=0))+
+                             labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+                                  y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+                                  title = title_name_add) + 
+                             stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_line) + theme(legend.text = element_text(size = 24)) +
+                             guides(col = guide_legend(nrow = 3, byrow = T))
+)
 plot(plot_wuwlegend)
 ```
 
+### Figure S4 unweighted Unifrac PERMANOVA
+```{r fs4uu, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t") %>% mutate(X=as.character(X))
+flies_unweighted_dm <- as.dist(flies_unweighted[,2:dim(flies_unweighted)[2]])
+flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+
+fig1_Suw_permanova <- adonis(flies_unweighted_dm ~ genotype * sex, flies_unifrac_table, permutations=1000)
+fig1_permSU <- tableGrob(round(fig1_Suw_permanova$aov.tab, 2), theme=ttheme_minimal())
+plot(fig1_permSU)
+
+```
+
+### Figure S4D
+```{r FigureS4D, exercise=T, warning = F, message = F, eval = F, exercise.timelimit = 10000}
+var1 = "genotype"
+var2 = "sex"
+var1_colors <-c("black","black","blue","blue","red","red")
+var2_shape <- c(15,0,15,0,15,0)
+legend_position = "none"
+var2_line <- c("solid","dotted","solid","dotted","solid","dotted")
+title_name_add <- NULL
+legend_position = "none"
+
+
+title_name_add <- NULL
+legend_position <- "none"
+wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+pc_values <- as.numeric(as.character(pc2[2,]))*100
+wfpc <- wfpc[,1:4] 
+fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+
+uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
+
+uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
+uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
+
+var1_table <- table(list(uwmpc_all[,var1]))
+var2_table <- table(list(uwmpc_all[,var2]))
+
+uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_F","w1118_M","park het_F","park het_M","park homo_F","park homo_M"))
+
+levels(uwmpc_all$two_var) <- c("Control F","Control M",expression("Het "*italic(park^25)*" F"), expression("Het "*italic(park^25)*" M"), expression("Hom "*italic(park^25)*" F"), expression("Hom "*italic(park^25)*" M"))
+
+twovar_table <- table(list(uwmpc_all$two_var))
+
+bc_all <- uwmpc_all
+
+plot_bc2016 <- ggplot(bc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
+  geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+  scale_color_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
+  scale_fill_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var1_colors) + 
+  scale_shape_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_shape) + 
+  #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+  #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+  theme(axis.text=element_text(size=12), 
+        panel.background = element_blank(), 
+        axis.line = element_line(), 
+        axis.ticks=element_line(), 
+        axis.title=element_text(size=14),	
+        #           title=element_text(size=16),
+        legend.position=legend_position,
+        plot.title = element_text(size=16, hjust=0))+
+  labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+       y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+       title = title_name_add) + 
+  stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control F","Control M",bquote(paste("Het ",italic(park^25)," F")),bquote(paste("Het ",italic(park^25)," M")),bquote(paste("Hom ",italic(park^25)," F")),bquote(paste("Hom ",italic(park^25)," M"))), values=var2_line)
+plot_bc2016
+```
+
+### Figure S4 Bray Curtis PERMANOVA
+```{r fs4bc, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+## bray curtis
+flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/wW/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_bc_dm <- as.dist(flies_bc[,2:dim(flies_bc)[2]])
+flies_unifrac_table <- flies_bc %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+
+fig1_Sb_permanova <- adonis(flies_bc_dm ~ genotype * sex, flies_unifrac_table, permutations = 1000)
+fig1_permSB <- tableGrob(round(fig1_Sb_permanova$aov.tab, 2), theme=ttheme_minimal())
+plot(fig1_permSB)
+
+
+```
+
+
 ### print Figure S4
-```{r Print Figure S4, exercise=F, warning = F, message = F, eval = F}
+```{r PrintFigureS4, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 # jpeg(h=900, w=1350, paste0("gerald_figureS4real_625.jpg"), units = "px", quality = 0.9, pointsize = 1/3000)
 # grid.arrange(
 #   plot_2016 + theme(axis.text = element_text(size = 20), axis.title = element_text(size = 24, face = "bold"), text = element_text(size = 40)) + labs(tag = "A", x = "Samples"),
@@ -1055,7 +1108,7 @@ plot(plot_wuwlegend)
 ```
 
 ### print figure S4 PERMANOVA
-```{r Print Figure S4 PERMANOVA, exercise=F, warning = F, message = F, eval = F}
+```{r PrintFigureS4_PERMANOVA, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 # jpeg(h=300, w=1600, paste0("permanova_tables_figs4real.jpg"), units = "px", quality = 0.9, pointsize = 1/300)
 # grid.arrange(
 #   fig1_permSB, fig1_permSU, fig1_permSW,
@@ -1071,7 +1124,7 @@ plot(plot_wuwlegend)
 
 ## Figure 5
 ### Figure 5A
-```{r Figure 5A, exercise=F, warning = F, message = F}
+```{r Figure5A, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 
 var1 = "genotype"
 var2 = "genotype"
@@ -1086,121 +1139,120 @@ legend_position = "none"
 plot_order <- c("variabileacdb00a8aa6e6697516e395f5364fd46","fac07b2893c7b432c5c424ca5ea83548","Enterobacteriaceae","Enterococcus","f365eed4b4c884bf45ea125ca3786f2a","brevis162bdb2c7b5934c8bfddada185f8a786","Lactobacillus","Lactobacillaceae","5877dadce57b3bd826fe6bfa04a97b56", "7b0f05ead6d2e7c841505a2892f761f7", "c35bc9806adc8b858466c744cc35b1e5","Acetobacter")
 plot_color = c("black","magenta","green","green4","lavender","blueviolet","navy","blue1","blue3","red3","red4","red1","tomato1")
 
- otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/rarefied_table.txt"),comment.char="", header=T, sep="\t", fill=T, skip=1) %>%
-   left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
-  
-  ## make melted OTU table
-  otu_table$OTU <- as.character(otu_table$X.OTU.ID)
-  otu2 <- otu_table[,c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species","OTU")]
-  otu2$OTU <- as.character(otu2$OTU)
-  melted_table <- data.frame(OTU_ID=character(),Count=integer(), Sample=character(), stringsAsFactors = F)
-  for (i in 2:(dim(otu_table)[2]-7-1)) {
-    rm(new_table)
-    new_table <- data.frame(OTU=as.character(otu_table$OTU),Count=as.integer(otu_table[,i]),Sample=as.character(colnames(otu_table)[i]), stringsAsFactors = F)
-    melted_table <- rbind(melted_table, new_table)
-  }
-  
-  ## start merging
-  melted_table_no0 <- melted_table %>% filter(Count>-1)
-  mt0 <- melted_table_no0 %>% inner_join(otu2, by=c("OTU"="X.OTU.ID"))
-  mt0$sample2 <- gsub("\\.","", mt0$Sample)
-  mt0$sample2 <- gsub("_","", mt0$sample2)
-  map2$sample2 <- gsub("_","",map2$X.SampleID)
-  map2$sample2 <- gsub("-","",map2$sample2)
-  mt1 <- mt0 %>% inner_join(map2)
-  mt2 <- mt1 %>% arrange(phylum, class,order,family,genus,species,OTU)
-  mt2$sort_order <- c(1:dim(mt2)[1])
-  mt2$class <- paste(mt2$phylum, mt2$class,sep="_")
-  mt2$order <- paste(mt2$class, mt2$order,sep="_")
-  mt2$family <- paste(mt2$order, mt2$family,sep="_")
-  mt2$genus <- paste(mt2$family, mt2$genus,sep="_")
-  mt2$species <- paste(mt2$genus, mt2$species,sep="_")
-  mt2$OTU <- paste(mt2$species, mt2$OTU,sep="_")
-  
-  ## make the interactive variable
-  mt2$twovar <- paste(mt2[,var1], mt2[,var2],sep="-")
-  
-  ## find the rare taxa
-  rare_taxa_to_keep <- c(" p__Actinobacteria_ c__Actinobacteria_ o__Actinomycetales_ f__Corynebacteriaceae_ g__Corynebacterium_ s__variabile_acdb00a8aa6e6697516e395f5364fd46"," p__Firmicutes_ c__Bacilli_ o__Lactobacillales_ f__Lactobacillaceae_ g__Lactobacillus_ s__brevis_162bdb2c7b5934c8bfddada185f8a786", " p__Firmicutes_ c__Bacilli_ o__Lactobacillales_ f__Lactobacillaceae_ g__Lactobacillus__c968e760232bc409d8b2f69661888e32"," p__Firmicutes_ c__Bacilli_ o__Lactobacillales_ f__Lactobacillaceae___b96ea9e9b09900ccecf691bbceea9b83"," p__Firmicutes_ c__Bacilli_ o__Lactobacillales_ f__Lactobacillaceae___fea6f0f65bf2e94ebff13b253d142072"," p__Proteobacteria_ c__Alphaproteobacteria_ o__Rhodospirillales_ f__Acetobacteraceae_ g__Acetobacter_ s___5877dadce57b3bd826fe6bfa04a97b56"," p__Proteobacteria_ c__Alphaproteobacteria_ o__Rhodospirillales_ f__Acetobacteraceae_ g__Acetobacter_ s___7b0f05ead6d2e7c841505a2892f761f7"," p__Proteobacteria_ c__Alphaproteobacteria_ o__Rhodospirillales_ f__Acetobacteraceae_ g__Acetobacter_ s___c35bc9806adc8b858466c744cc35b1e5"," p__Proteobacteria_ c__Alphaproteobacteria_ o__Rhodospirillales_ f__Acetobacteraceae_ g__Acetobacter__d9804cbb9c1b7c95059a296f45c8dff6", " p__Proteobacteria_ c__Gammaproteobacteria_ o__Pasteurellales_ f___ g___ s___fac07b2893c7b432c5c424ca5ea83548")
-  rare_taxa <- mt2 %>% group_by_(.dots = taxonomic_level) %>% summarize(phylum.abun=sum(Count)) %>% mutate(rpa = phylum.abun / sum(phylum.abun)) %>% filter(rpa<=rpa_in_chart) %>% filter(OTU%in%rare_taxa_to_keep==F)%>% select_(.dots = taxonomic_level) %>% unlist
-  rt2 <- mt2 %>% group_by_(.dots=list(var1, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames("paste('other')", taxonomic_level))
-  
-  ## find the abundant taxa
-  abun_taxa <- mt2 %>% group_by_(.dots=list(var1, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) %>% data.frame()
-  
-  abundant_taxa <- names(table(list(abun_taxa[,paste(taxonomic_level)])))
-  
-  for(i in 1:length(abundant_taxa)) {
-    try(space_split_vector <- strsplit(abundant_taxa[i], split = " "))
-    try(while (paste(tail(strsplit(tail(space_split_vector[[1]], 1),split = "")[[1]], 2), collapse="") == "__") {
-      space_split_vector[[1]] <- head(space_split_vector[[1]], -1); space_split_vector[[1]]
-    })
-    try(abundant_taxa[i] <- gsub(strsplit(tail(space_split_vector[[1]],1), "__")[[1]][2], pattern = "_",replacement = ""))
-  }
-  
-  abun_taxa <- mt2 %>% group_by_(.dots=list(var1, the_two_var, the_id, taxonomic_level)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames(paste("abundant_taxa"), taxonomic_level)) %>% group_by_(.dots=list(var1, the_two_var, the_id, taxonomic_level))
-  
-  ## merge the two into a new file
-  rta <- rt2 %>% bind_rows(abun_taxa) %>% group_by(twovar) %>% mutate(rpa = phylum.abun / read_depth) %>% filter(rpa>0) %>% droplevels()%>%dplyr::mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) #%>% mutate_(.dots=setNames(factor(rta[,paste(taxonomic_level)], levels=c("other",plot_order)), taxonomic_level))
-  
-  if(length(plot_order) == 1) {
-    plot_order <- abundant_taxa
-  }
-  
-  rta$genus2 <- unlist(rta[,paste0(taxonomic_level)])
-  rta$genus2 <- factor(rta$genus2,levels=c("other",plot_order))
-  
-  if(length(plot_color) == 1) {
-    plot_color <- c(rep("red", length(table(list(rta$genus2)))))
-  }
-  
-  rta$genotype2 <- factor(rta$genotype, levels = c("w1118","park25"))
-  levels(rta$genotype2) <- c("Control", expression(italic(park^25)))
-  
+otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/rarefied_table.txt"),comment.char="", header=T, sep="\t", fill=T, skip=1) %>%
+  left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
+map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
+
+## make melted OTU table
+otu_table$OTU <- as.character(otu_table$X.OTU.ID)
+otu2 <- otu_table[,c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species","OTU")]
+otu2$OTU <- as.character(otu2$OTU)
+melted_table <- data.frame(OTU_ID=character(),Count=integer(), Sample=character(), stringsAsFactors = F)
+for (i in 2:(dim(otu_table)[2]-7-1)) {
+  rm(new_table)
+  new_table <- data.frame(OTU=as.character(otu_table$OTU),Count=as.integer(otu_table[,i]),Sample=as.character(colnames(otu_table)[i]), stringsAsFactors = F)
+  melted_table <- rbind(melted_table, new_table)
+}
+
+## start merging
+melted_table_no0 <- melted_table %>% filter(Count>-1)
+mt0 <- melted_table_no0 %>% inner_join(otu2, by=c("OTU"="X.OTU.ID"))
+mt0$sample2 <- gsub("\\.","", mt0$Sample)
+mt0$sample2 <- gsub("_","", mt0$sample2)
+map2$sample2 <- gsub("_","",map2$X.SampleID)
+map2$sample2 <- gsub("-","",map2$sample2)
+mt1 <- mt0 %>% inner_join(map2)
+mt2 <- mt1 %>% arrange(phylum, class,order,family,genus,species,OTU)
+mt2$sort_order <- c(1:dim(mt2)[1])
+mt2$class <- paste(mt2$phylum, mt2$class,sep="_")
+mt2$order <- paste(mt2$class, mt2$order,sep="_")
+mt2$family <- paste(mt2$order, mt2$family,sep="_")
+mt2$genus <- paste(mt2$family, mt2$genus,sep="_")
+mt2$species <- paste(mt2$genus, mt2$species,sep="_")
+mt2$OTU <- paste(mt2$species, mt2$OTU,sep="_")
+
+## make the interactive variable
+mt2$twovar <- paste(mt2[,var1], mt2[,var2],sep="-")
+
+## find the rare taxa
+rare_taxa_to_keep <- c(" p__Actinobacteria_ c__Actinobacteria_ o__Actinomycetales_ f__Corynebacteriaceae_ g__Corynebacterium_ s__variabile_acdb00a8aa6e6697516e395f5364fd46"," p__Firmicutes_ c__Bacilli_ o__Lactobacillales_ f__Lactobacillaceae_ g__Lactobacillus_ s__brevis_162bdb2c7b5934c8bfddada185f8a786", " p__Firmicutes_ c__Bacilli_ o__Lactobacillales_ f__Lactobacillaceae_ g__Lactobacillus__c968e760232bc409d8b2f69661888e32"," p__Firmicutes_ c__Bacilli_ o__Lactobacillales_ f__Lactobacillaceae___b96ea9e9b09900ccecf691bbceea9b83"," p__Firmicutes_ c__Bacilli_ o__Lactobacillales_ f__Lactobacillaceae___fea6f0f65bf2e94ebff13b253d142072"," p__Proteobacteria_ c__Alphaproteobacteria_ o__Rhodospirillales_ f__Acetobacteraceae_ g__Acetobacter_ s___5877dadce57b3bd826fe6bfa04a97b56"," p__Proteobacteria_ c__Alphaproteobacteria_ o__Rhodospirillales_ f__Acetobacteraceae_ g__Acetobacter_ s___7b0f05ead6d2e7c841505a2892f761f7"," p__Proteobacteria_ c__Alphaproteobacteria_ o__Rhodospirillales_ f__Acetobacteraceae_ g__Acetobacter_ s___c35bc9806adc8b858466c744cc35b1e5"," p__Proteobacteria_ c__Alphaproteobacteria_ o__Rhodospirillales_ f__Acetobacteraceae_ g__Acetobacter__d9804cbb9c1b7c95059a296f45c8dff6", " p__Proteobacteria_ c__Gammaproteobacteria_ o__Pasteurellales_ f___ g___ s___fac07b2893c7b432c5c424ca5ea83548")
+rare_taxa <- mt2 %>% group_by_(.dots = taxonomic_level) %>% summarize(phylum.abun=sum(Count)) %>% mutate(rpa = phylum.abun / sum(phylum.abun)) %>% filter(rpa<=rpa_in_chart) %>% filter(OTU%in%rare_taxa_to_keep==F)%>% select_(.dots = taxonomic_level) %>% unlist
+rt2 <- mt2 %>% group_by_(.dots=list(var1, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames("paste('other')", taxonomic_level))
+
+## find the abundant taxa
+abun_taxa <- mt2 %>% group_by_(.dots=list(var1, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) %>% data.frame()
+
+abundant_taxa <- names(table(list(abun_taxa[,paste(taxonomic_level)])))
+
+for(i in 1:length(abundant_taxa)) {
+  try(space_split_vector <- strsplit(abundant_taxa[i], split = " "))
+  try(while (paste(tail(strsplit(tail(space_split_vector[[1]], 1),split = "")[[1]], 2), collapse="") == "__") {
+    space_split_vector[[1]] <- head(space_split_vector[[1]], -1); space_split_vector[[1]]
+  })
+  try(abundant_taxa[i] <- gsub(strsplit(tail(space_split_vector[[1]],1), "__")[[1]][2], pattern = "_",replacement = ""))
+}
+
+abun_taxa <- mt2 %>% group_by_(.dots=list(var1, the_two_var, the_id, taxonomic_level)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames(paste("abundant_taxa"), taxonomic_level)) %>% group_by_(.dots=list(var1, the_two_var, the_id, taxonomic_level))
+
+## merge the two into a new file
+rta <- rt2 %>% bind_rows(abun_taxa) %>% group_by(twovar) %>% mutate(rpa = phylum.abun / read_depth) %>% filter(rpa>0) %>% droplevels()%>%dplyr::mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) #%>% mutate_(.dots=setNames(factor(rta[,paste(taxonomic_level)], levels=c("other",plot_order)), taxonomic_level))
+
+if(length(plot_order) == 1) {
+  plot_order <- abundant_taxa
+}
+
+rta$genus2 <- unlist(rta[,paste0(taxonomic_level)])
+rta$genus2 <- factor(rta$genus2,levels=c("other",plot_order))
+
+if(length(plot_color) == 1) {
+  plot_color <- c(rep("red", length(table(list(rta$genus2)))))
+}
+
+rta$genotype2 <- factor(rta$genotype, levels = c("w1118","park25"))
+levels(rta$genotype2) <- c("Control", expression(italic(park^25)))
+
 legend_position = "none"
 
 figure5A <- ggplot(rta, aes(x = X.SampleID, y = rpa, fill = genus2)) + 
-    facet_grid(.~genotype2 , drop = TRUE, space = "free", scales = "free", labeller = label_parsed) +   
-    facet_wrap(~ genotype2, strip.position = "bottom", scales = "free_x", nrow = 1, labeller = label_parsed) + 
-    geom_bar(stat = "identity", width = 1) +
-    scale_fill_manual(values=plot_color, labels = c("Other",
-                                                    bquote(paste(italic(C.)," ",italic(variabile))),# magenta
-                                                    expression(paste("Pasteurellales")),# green
-                                                    expression(paste("Enterobacteriaceae")), #green4
-                                                    expression(paste(italic(Enterococcus))), # lavender
-                                                    expression(paste(italic(Leuconostoc))), # blueviolet
-                                                    expression(paste(italic(L.)," ",italic(brevis))), #navy
-                                                    expression(paste(italic(Lactobacillus))),# blue1
-                                                   "Lactobacillaceae ASVs 1 and 2", # blue3
-                                                    expression(paste(italic(Acetobacter)," ASV1")),# red3
-                                                    expression(paste(italic(Acetobacter)," ASV2")),#red4
-                                                    expression(paste(italic(Acetobacter)," ASV3")), # red1
-                                                    expression(paste(italic(Acetobacter)," ASV4")) # tomato
-                                                    ), 
-                      name = NULL)+
-    theme_cowplot() + 
-    theme(legend.position = "none",
-          axis.text.x = element_blank(),
-          strip.background = element_rect(fill = "white"),
-          legend.text.align = 0) +
-#  guide = guide_legend(label.position = "left") +
-    ylab("fractional abundance") +
+  facet_grid(.~genotype2 , drop = TRUE, space = "free", scales = "free", labeller = label_parsed) +   
+  facet_wrap(~ genotype2, strip.position = "bottom", scales = "free_x", nrow = 1, labeller = label_parsed) + 
+  geom_bar(stat = "identity", width = 1) +
+  scale_fill_manual(values=plot_color, labels = c("Other",
+                                                  bquote(paste(italic(C.)," ",italic(variabile))),# magenta
+                                                  expression(paste("Pasteurellales")),# green
+                                                  expression(paste("Enterobacteriaceae")), #green4
+                                                  expression(paste(italic(Enterococcus))), # lavender
+                                                  expression(paste(italic(Leuconostoc))), # blueviolet
+                                                  expression(paste(italic(L.)," ",italic(brevis))), #navy
+                                                  expression(paste(italic(Lactobacillus))),# blue1
+                                                  "Lactobacillaceae ASVs 1 and 2", # blue3
+                                                  expression(paste(italic(Acetobacter)," ASV1")),# red3
+                                                  expression(paste(italic(Acetobacter)," ASV2")),#red4
+                                                  expression(paste(italic(Acetobacter)," ASV3")), # red1
+                                                  expression(paste(italic(Acetobacter)," ASV4")) # tomato
+  ), 
+  name = NULL)+
+  theme_cowplot() + 
+  theme(legend.position = "none",
+        axis.text.x = element_blank(),
+        strip.background = element_rect(fill = "white"),
+        legend.text.align = 0) +
+  #  guide = guide_legend(label.position = "left") +
+  ylab("fractional abundance") +
   xlab("samples") #+ labs (tag = "A")
 
 
 plot(figure5A)
 
 taxon_legend <- g_legend(figure5A+theme(legend.position = "right", 
-                                           legend.text = element_text(size = 24),
-                                           legend.title = element_text(size = 32, face = "bold")
-                             )
+                                        legend.text = element_text(size = 24),
+                                        legend.title = element_text(size = 32, face = "bold")
+)
 )
 ```
 
 ### Figure 5B
-```{r Figure 5B, exercise=F, warning = F, message = F}
-folder_name = paste0(file_path,"/weighted_unifrac")
+```{r Figure5B, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 var1 = "genotype"
 var2 = "genotype"
 var1_colors <-c("black","black")
@@ -1209,71 +1261,71 @@ title_name_add <- NULL
 legend_position = "none"
 var2_line <- c("solid","dashed")
 
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/weighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/weighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
-  pc_values <- as.numeric(as.character(pc2[2,]))*100
-  wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/weighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
-  
-  uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
-  
-  uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
-  uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
-  
-  var1_table <- table(list(uwmpc_all[,var1]))
-  var2_table <- table(list(uwmpc_all[,var2]))
- 
-  uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_w1118","park25_park25"))
-  
-  levels(uwmpc_all$two_var) <- c("Control",expression(italic(park^25)))
-  
-  twovar_table <- table(list(uwmpc_all$two_var))
+wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/weighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/weighted_unifrac_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+pc_values <- as.numeric(as.character(pc2[2,]))*100
+wfpc <- wfpc[,1:4] 
+fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/weighted_unifrac_distance_matrix/distance-matrix.tsv"),header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+
+uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
+
+uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
+uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
+
+var1_table <- table(list(uwmpc_all[,var1]))
+var2_table <- table(list(uwmpc_all[,var2]))
+
+uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_w1118","park25_park25"))
+
+levels(uwmpc_all$two_var) <- c("Control",expression(italic(park^25)))
+
+twovar_table <- table(list(uwmpc_all$two_var))
 
 plot_w2016 <- ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          legend.position="none",
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = NULL) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line)
+  geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+  scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+  scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+  scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
+  theme(axis.text=element_text(size=12), 
+        panel.background = element_blank(), 
+        axis.line = element_line(), 
+        axis.ticks=element_line(), 
+        axis.title=element_text(size=14),	
+        legend.position="none",
+        plot.title = element_text(size=16, hjust=0))+
+  labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+       y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+       title = NULL) + 
+  stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line)
 
 plot_w2016
 
 legend_position = "bottom"
 
 plot_wuwlegend <- g_legend(ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line) + theme(legend.text = element_text(size = 24)) +
-      guides(col = guide_legend(nrow = 3, byrow = T))
-  )
+                             geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+                             scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+                             scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+                             scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
+                             theme(axis.text=element_text(size=12), 
+                                   panel.background = element_blank(), 
+                                   axis.line = element_line(), 
+                                   axis.ticks=element_line(), 
+                                   axis.title=element_text(size=14),	
+                                   #           title=element_text(size=16),
+                                   legend.position=legend_position,
+                                   plot.title = element_text(size=16, hjust=0))+
+                             labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+                                  y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+                                  title = title_name_add) + 
+                             stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line) + theme(legend.text = element_text(size = 24)) +
+                             guides(col = guide_legend(nrow = 3, byrow = T))
+)
 plot(plot_wuwlegend)
 ```
 
 ### print Figure 5
-```{r print Fig 5, exercise=F, warning = F, message = F, eval = F}
+```{r printFig5, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 jpeg(h=1100, w=1100, paste0("gerald_figure5_625.jpg"), units = "px", quality = 0.9, pointsize = 1/300)
 grid.arrange(	
   figure5A + theme(axis.text = element_text(size = 24), axis.title = element_text(size = 32, face = "bold"), text = element_text(size = 48)) + labs(tag = "A", y = "Relative abundance", x = "Samples"),
@@ -1286,7 +1338,7 @@ grid.arrange(
     c(1,1,1,1),
     c(2,NA,4,4),
     c(2,3,3,NA)  
-    )
+  )
 )
 dev.off()
 
@@ -1294,128 +1346,140 @@ dev.off()
 
 ## Figure S7 - extra PCoA for figure 5
 ### Figure S7A
-```{r Figure S7A, exercise=F, warning = F, message = F}
-folder_name = paste0(file_path,"/bray_curtis")
+```{r FigureS7A, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+var1 = "genotype"
+var2 = "genotype"
+var1_colors <-c("black","black")
+var2_shape <- c(15,0)
+title_name_add <- NULL
+legend_position = "none"
+var2_line <- c("solid","dashed")
 title_name_add <- NULL
 legend_position <- "none"
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/bray_curtis_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
-  pc_values <- as.numeric(as.character(pc2[2,]))*100
-  wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
-  
-  uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
-  
-  uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
-  uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
-  
-  var1_table <- table(list(uwmpc_all[,var1]))
-  var2_table <- table(list(uwmpc_all[,var2]))
- 
-  uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_w1118","park25_park25"))
-  
-  levels(uwmpc_all$two_var) <- c("Control",expression(italic(park^25)))
-  
-  twovar_table <- table(list(uwmpc_all$two_var))
+wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/bray_curtis_pcoa_results/ordination.txt"),sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+pc_values <- as.numeric(as.character(pc2[2,]))*100
+wfpc <- wfpc[,1:4] 
+fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
 
-  bc_all <- uwmpc_all
+uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
+
+uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
+uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
+
+var1_table <- table(list(uwmpc_all[,var1]))
+var2_table <- table(list(uwmpc_all[,var2]))
+
+uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_w1118","park25_park25"))
+
+levels(uwmpc_all$two_var) <- c("Control",expression(italic(park^25)))
+
+twovar_table <- table(list(uwmpc_all$two_var))
+
+bc_all <- uwmpc_all
 
 plot_bc2016 <- ggplot(bc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line)
+  geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+  scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+  scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+  scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
+  #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+  #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+  theme(axis.text=element_text(size=12), 
+        panel.background = element_blank(), 
+        axis.line = element_line(), 
+        axis.ticks=element_line(), 
+        axis.title=element_text(size=14),	
+        #           title=element_text(size=16),
+        legend.position=legend_position,
+        plot.title = element_text(size=16, hjust=0))+
+  labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+       y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+       title = title_name_add) + 
+  stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line)
 plot_bc2016
 ```
 
 ### Figure S7B
-```{r Figure S7B, exercise=F, warning = F, message = F}
-folder_name = paste0(file_path,"/unweighted_unifrac")
+```{r FigureS7B, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+var1 = "genotype"
+var2 = "genotype"
+var1_colors <-c("black","black")
+var2_shape <- c(15,0)
+title_name_add <- NULL
+legend_position = "none"
+var2_line <- c("solid","dashed")
 legend_position = "none"
 title_name_add <- NULL
 
-   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
-  pc_values <- as.numeric(as.character(pc2[2,]))*100
-  wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
-  
-  uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
-  
-  uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
-  uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
-  
-  var1_table <- table(list(uwmpc_all[,var1]))
-  var2_table <- table(list(uwmpc_all[,var2]))
- 
-  uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_w1118","park25_park25"))
-  
-  levels(uwmpc_all$two_var) <- c("Control",expression(italic(park^25)))
-  
-  twovar_table <- table(list(uwmpc_all$two_var))
+wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+pc_values <- as.numeric(as.character(pc2[2,]))*100
+wfpc <- wfpc[,1:4] 
+fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
 
-  plot_uw2016 <- ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line) 
+uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
 
+uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
+uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
+
+var1_table <- table(list(uwmpc_all[,var1]))
+var2_table <- table(list(uwmpc_all[,var2]))
+
+uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_w1118","park25_park25"))
+
+levels(uwmpc_all$two_var) <- c("Control",expression(italic(park^25)))
+
+twovar_table <- table(list(uwmpc_all$two_var))
+
+plot_uw2016 <- ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
+  geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+  scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+  scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+  scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
+  #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+  #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+  theme(axis.text=element_text(size=12), 
+        panel.background = element_blank(), 
+        axis.line = element_line(), 
+        axis.ticks=element_line(), 
+        axis.title=element_text(size=14),	
+        #           title=element_text(size=16),
+        legend.position=legend_position,
+        plot.title = element_text(size=16, hjust=0))+
+  labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+       y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+       title = title_name_add) + 
+  stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line) 
+plot_uw2016
 legend_position = "bottom"
 
 plot_wuwlegend2 <- g_legend(ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line) + theme(legend.text = element_text(size = 24)) +
-      guides(col = guide_legend(nrow = 1, byrow = F))
-  )
+                              geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+                              scale_color_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+                              scale_fill_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var1_colors) + 
+                              scale_shape_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_shape) + 
+                              #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+                              #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+                              theme(axis.text=element_text(size=12), 
+                                    panel.background = element_blank(), 
+                                    axis.line = element_line(), 
+                                    axis.ticks=element_line(), 
+                                    axis.title=element_text(size=14),	
+                                    #           title=element_text(size=16),
+                                    legend.position=legend_position,
+                                    plot.title = element_text(size=16, hjust=0))+
+                              labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+                                   y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+                                   title = title_name_add) + 
+                              stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control",expression(italic(park^25))), values=var2_line) + theme(legend.text = element_text(size = 24)) +
+                              guides(col = guide_legend(nrow = 1, byrow = F))
+)
 plot(plot_wuwlegend2)
 ```
 
 ### print Figure S7
-```{r print Fig S7, eval=FALSE}
+```{r printFigS7, exercise = T, eval=FALSE, exercise.timelimit = 10000}
 jpeg(h=550, w=1100, paste0("gerald_figureSB.jpg"), units = "px", quality = 0.9, pointsize = 1/300)
 grid.arrange(	
   plot_bc2016 + labs(tag = "A") + theme(axis.text = element_text(size = 24), axis.title = element_text(size = 32, face = "bold"), text = element_text(size = 42, face = "bold")),
@@ -1426,13 +1490,13 @@ grid.arrange(
   layout_matrix=rbind(		
     c(1,2),
     c(3,3)  
-    )
+  )
 )
 dev.off()
 ```
 
 ## Figure S5 ANCOM (no significant taxa)
-```{Figure S5,exercise=F, warning = F, message = F }
+```{r FigureS5ancom,exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 
 var1 = "genotype"
 var2 = "genotype"
@@ -1456,110 +1520,89 @@ taxonomic_level = "class"
 taxonomic_level = "order"
 taxonomic_level = "family"
 
-  otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% 
-    left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
-  
-  ref_names <- subset(colnames(otu_table), (colnames(otu_table)%in%c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species")==F))
-  
-    ## Cluster rows by taxonomy hierarchically 
-  taxon_vector <- c("kingdom","phylum","class","order","family","genus","species","X.OTU.ID")
-  taxon_number <- which(taxon_vector==taxonomic_level)
-  taxon_vector2 <- c()
-  for (i in 1:taxon_number) {
-    taxon_vector2 <- c(taxon_vector2,taxon_vector[i])
-  }
+otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces1/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% 
+  left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
 
-  if(taxonomic_level!="X.OTU.ID") {
-    otu2 <- otu_table[,c("X.OTU.ID",taxon_vector2)] %>% 
-      tidyr::unite(clustered_taxonomy, (taxon_vector[1:length(taxon_vector2)])) %>%
-      mutate(clustered_taxonomy = as.character(clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = " ",replacement = "",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "^__",replacement = "__unassigned",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "___",replacement = "__unassigned_",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "__$",replacement = "__unassigned",x = clustered_taxonomy))
-  } else if (taxonomic_level == "X.OTU.ID") {
-    otu2 <- otu_table[,c("X.OTU.ID",taxon_vector2)] %>% 
-      mutate(OTUID2 = X.OTU.ID) %>%
-      tidyr::unite(clustered_taxonomy, c(taxon_vector[1:7],"OTUID2")) %>%
-      mutate(clustered_taxonomy = as.character(clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = " ",replacement = "",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "^__",replacement = "__unassigned",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "___",replacement = "__unassigned_",x = clustered_taxonomy)) %>%
-      mutate(clustered_taxonomy = gsub(pattern = "__$",replacement = "__unassigned",x = clustered_taxonomy)) %>%
-      dplyr::select(-X.OTU.ID.1)
-        
-    } 
+ref_names <- subset(colnames(otu_table), (colnames(otu_table)%in%c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species")==F))
 
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T,sep="\t") %>% 
-    dplyr::select_(.dots = list(the_id,var1,var2,var3,Group))
+## Cluster rows by taxonomy hierarchically 
+taxon_vector <- c("kingdom","phylum","class","order","family","genus","species","X.OTU.ID")
+taxon_number <- which(taxon_vector==taxonomic_level)
+taxon_vector2 <- c()
+for (i in 1:taxon_number) {
+  taxon_vector2 <- c(taxon_vector2,taxon_vector[i])
+}
 
-  phyl2 <- otu_table %>% 
-    inner_join(otu2, by = "X.OTU.ID") %>%
-    group_by(clustered_taxonomy) %>% 
-    summarize_at(ref_names,sum, na.rm=T)
-  rownames(phyl2) <- as.character(unlist(phyl2$clustered_taxonomy))
+if(taxonomic_level!="X.OTU.ID") {
+  otu2 <- otu_table[,c("X.OTU.ID",taxon_vector2)] %>% 
+    tidyr::unite(clustered_taxonomy, (taxon_vector[1:length(taxon_vector2)])) %>%
+    mutate(clustered_taxonomy = as.character(clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = " ",replacement = "",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "^__",replacement = "__unassigned",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "___",replacement = "__unassigned_",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "__$",replacement = "__unassigned",x = clustered_taxonomy))
+} else if (taxonomic_level == "X.OTU.ID") {
+  otu2 <- otu_table[,c("X.OTU.ID",taxon_vector2)] %>% 
+    mutate(OTUID2 = X.OTU.ID) %>%
+    tidyr::unite(clustered_taxonomy, c(taxon_vector[1:7],"OTUID2")) %>%
+    mutate(clustered_taxonomy = as.character(clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = " ",replacement = "",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "^__",replacement = "__unassigned",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "___",replacement = "__unassigned_",x = clustered_taxonomy)) %>%
+    mutate(clustered_taxonomy = gsub(pattern = "__$",replacement = "__unassigned",x = clustered_taxonomy)) %>%
+    dplyr::select(-X.OTU.ID.1)
   
-  phyl3 <- phyl2 %>% dplyr::select(-clustered_taxonomy) %>% t() %>% data.frame() 
-  colnames(phyl3) <- rownames(phyl2)
-  phyl3 <- mutate(phyl3, X.SampleID=rownames(phyl3))
-  phyl3$Sample.ID <- gsub("\\.","", phyl3$X.SampleID)
-  phyl3$Sample.ID <- gsub("_","", phyl3$Sample.ID)
-  map2$Sample.ID <- gsub("_","",map2$X.SampleID)
-  map2$Sample.ID <- gsub("-","",map2$Sample.ID)
-  
-  phyl5 <- phyl3 %>% dplyr::select(Sample.ID, everything()) %>% dplyr::select(-X.SampleID)
+} 
+
+map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, fill=T,sep="\t") %>% 
+  dplyr::select_(.dots = list(the_id,var1,var2,var3,Group))
+
+phyl2 <- otu_table %>% 
+  inner_join(otu2, by = "X.OTU.ID") %>%
+  group_by(clustered_taxonomy) %>% 
+  summarize_at(ref_names,sum, na.rm=T)
+rownames(phyl2) <- as.character(unlist(phyl2$clustered_taxonomy))
+
+phyl3 <- phyl2 %>% dplyr::select(-clustered_taxonomy) %>% t() %>% data.frame() 
+colnames(phyl3) <- rownames(phyl2)
+phyl3 <- mutate(phyl3, X.SampleID=rownames(phyl3))
+phyl3$Sample.ID <- gsub("\\.","", phyl3$X.SampleID)
+phyl3$Sample.ID <- gsub("_","", phyl3$Sample.ID)
+map2$Sample.ID <- gsub("_","",map2$X.SampleID)
+map2$Sample.ID <- gsub("-","",map2$Sample.ID)
+
+phyl5 <- phyl3 %>% dplyr::select(Sample.ID, everything()) %>% dplyr::select(-X.SampleID)
+colnames(phyl5)[1] <- "Sample.ID"
+
+map3 <- map2 %>% dplyr::select(Sample.ID, everything()) %>% dplyr::select(-X.SampleID) %>% filter(Sample.ID %in% phyl5$Sample.ID)
+colnames(map3)[1] <- "Sample.ID"
+
+phyl4 <- phyl3 %>% inner_join(map2, by=c("Sample.ID")) %>% mutate(Group = get(Group)) %>% droplevels()#%>% dplyr::select_(.dots = list(col1drop, col2drop, paste0("-",var1))) %>% dplyr::select(-sample2)
+rm(comparison_test)
+
+if (taxonomic_level == "X.OTU.ID") {
+  colnames(phyl5) <- paste0("X",colnames(phyl5))
   colnames(phyl5)[1] <- "Sample.ID"
-  
-  map3 <- map2 %>% dplyr::select(Sample.ID, everything()) %>% dplyr::select(-X.SampleID) %>% filter(Sample.ID %in% phyl5$Sample.ID)
-  colnames(map3)[1] <- "Sample.ID"
-  
-  phyl4 <- phyl3 %>% inner_join(map2, by=c("Sample.ID")) %>% mutate(Group = get(Group)) %>% droplevels()#%>% dplyr::select_(.dots = list(col1drop, col2drop, paste0("-",var1))) %>% dplyr::select(-sample2)
-  rm(comparison_test)
-  
-  if (taxonomic_level == "X.OTU.ID") {
-    colnames(phyl5) <- paste0("X",colnames(phyl5))
-    colnames(phyl5)[1] <- "Sample.ID"
-  }
-  
-  comparison_test = ANCOM(otu_data = phyl5, 
-              meta_data = map3, 
-              main_var = main.var,  
-              zero_cut = .99, 
-              p_adjust_method = multcorr, 
-              alpha = sig, 
-              adj_formula = adj.formula, 
-              rand_formula = NULL)
-  comparison_test
-  
-  ## all are FALSE
+}
+
+comparison_test = ANCOM(otu_data = phyl5, 
+                        meta_data = map3, 
+                        main_var = main.var,  
+                        zero_cut = .99, 
+                        p_adjust_method = multcorr, 
+                        alpha = sig, 
+                        adj_formula = adj.formula, 
+                        rand_formula = NULL)
+comparison_test
+
+## all are FALSE
 ```
 
 ## Figure S8
 ### Figure S8A
-```{r Figure S8A, exercise=F, warning = F, message = F}
-  ## unweighted
-flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t") %>% mutate(X=as.character(X))
-flies_unweighted_dm <- as.dist(flies_unweighted[,2:dim(flies_unweighted)[2]])
-flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+```{r FigureS8A, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 
-		## unweighted
-fig1_Suw_permanova <- adonis(flies_unweighted_dm ~ genotype * sample_type, flies_unifrac_table, permutations=1000)
-fig1_permSU <- tableGrob(round(fig1_Suw_permanova$aov.tab, 2), theme=ttheme_minimal())
-plot(fig1_permSU)
-
-    ## weighted
-flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
-flies_weighted_dm <- as.dist(flies_weighted[,2:dim(flies_weighted)[2]])
-fig1_Sw_permanova <- adonis(flies_weighted_dm ~ genotype * sample_type, flies_unifrac_table, permutations = 1000)
-fig1_permSW <- tableGrob(round(fig1_Sw_permanova$aov.tab, 2), theme=ttheme_minimal())
-
-    ## bray curtis
-flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
-flies_bc_dm <- as.dist(flies_bc[,2:dim(flies_bc)[2]])
-fig1_Sb_permanova <- adonis(flies_bc_dm ~ genotype * sample_type, flies_unifrac_table, permutations = 1000)
-fig1_permSB <- tableGrob(round(fig1_Sb_permanova$aov.tab, 2), theme=ttheme_minimal())
-
-		## taxon plot 
+## taxon plot 
 var1 = "genotype"
 var2 = "sample_type"
 taxonomic_level = "order"
@@ -1574,106 +1617,106 @@ taxonomic_level = "OTU"
 plot_order <- c("variabileacdb00a8aa6e6697516e395f5364fd46","Enterobacteriaceae","Enterococcus","f365eed4b4c884bf45ea125ca3786f2a","brevis162bdb2c7b5934c8bfddada185f8a786","Lactobacillus","Lactobacillaceae","5877dadce57b3bd826fe6bfa04a97b56","7b0f05ead6d2e7c841505a2892f761f7","c35bc9806adc8b858466c744cc35b1e5","Acetobacter")
 plot_color = c("black","magenta","green","lavender","navy","blue3","blue2","blue1","red3","red4","red2","tomato1")
 
- otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
-  map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
-  
-  ## make melted OTU table
-  otu_table$OTU <- as.character(otu_table$X.OTU.ID)
-  otu2 <- otu_table[,c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species","OTU")]
-  otu2$OTU <- as.character(otu2$OTU)
-  melted_table <- data.frame(OTU_ID=character(),Count=integer(), Sample=character(), stringsAsFactors = F)
-  for (i in 2:(dim(otu_table)[2]-7-1)) {
-    rm(new_table)
-    new_table <- data.frame(OTU=as.character(otu_table$OTU),Count=as.integer(otu_table[,i]),Sample=as.character(colnames(otu_table)[i]), stringsAsFactors = F)
-    melted_table <- rbind(melted_table, new_table)
-  }
- 
-    ## start merging
-  melted_table_no0 <- melted_table %>% filter(Count>-1)
-  mt0 <- melted_table_no0 %>% inner_join(otu2, by=c("OTU"="X.OTU.ID"))
-  mt0$sample2 <- gsub("\\.","", mt0$Sample)
-  mt0$sample2 <- gsub("_","", mt0$sample2)
-  map2$sample2 <- gsub("_","",map2$X.SampleID)
-  map2$sample2 <- gsub("-","",map2$sample2)
-  mt1 <- mt0 %>% inner_join(map2)
-  mt2 <- mt1 %>% arrange(phylum, class,order,family,genus,species,OTU)
-  mt2$sort_order <- c(1:dim(mt2)[1])
-  mt2$class <- paste(mt2$phylum, mt2$class,sep="_")
-  mt2$order <- paste(mt2$class, mt2$order,sep="_")
-  mt2$family <- paste(mt2$order, mt2$family,sep="_")
-  mt2$genus <- paste(mt2$family, mt2$genus,sep="_")
-  mt2$species <- paste(mt2$genus, mt2$species,sep="_")
-  mt2$OTU <- paste(mt2$species, mt2$OTU,sep="_")
-  
-  ## make the interactive variable
-  mt2$twovar <- paste(mt2[,var1], mt2[,var2],sep="-")
-  
-  ## find the rare taxa
-  rare_taxa <- mt2 %>% group_by_(.dots = taxonomic_level) %>% summarize(phylum.abun=sum(Count)) %>% mutate(rpa = phylum.abun / sum(phylum.abun)) %>% filter(rpa<=rpa_in_chart) %>% select_(.dots = taxonomic_level) %>% unlist
-  rt2 <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames("paste('other')", taxonomic_level))
-  
-  ## find the abundant taxa
-  abun_taxa <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) %>% data.frame()
-  
-  abundant_taxa <- names(table(list(abun_taxa[,paste(taxonomic_level)])))
-  
-  for(i in 1:length(abundant_taxa)) {
-    try(space_split_vector <- strsplit(abundant_taxa[i], split = " "))
-    try(while (paste(tail(strsplit(tail(space_split_vector[[1]], 1),split = "")[[1]], 2), collapse="") == "__") {
-      space_split_vector[[1]] <- head(space_split_vector[[1]], -1); space_split_vector[[1]]
-    })
-    try(abundant_taxa[i] <- gsub(strsplit(tail(space_split_vector[[1]],1), "__")[[1]][2], pattern = "_",replacement = ""))
-  }
-  
-  abun_taxa <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id, taxonomic_level)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames(paste("abundant_taxa"), taxonomic_level)) %>% group_by_(.dots=list(var1,var2, the_two_var, the_id, taxonomic_level))
-  
-  ## merge the two into a new file
-  rta <- rt2 %>% bind_rows(abun_taxa) %>% group_by(twovar) %>% mutate(rpa = phylum.abun / read_depth) %>% filter(rpa>0) %>% droplevels()%>%dplyr::mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) #%>% mutate_(.dots=setNames(factor(rta[,paste(taxonomic_level)], levels=c("other",plot_order)), taxonomic_level))
-  
-  if(length(plot_order) == 1) {
-    plot_order <- abundant_taxa
-  }
-  
-  rta$genus2 <- unlist(rta[,paste0(taxonomic_level)])
-  rta$genus2 <- factor(rta$genus2,levels=c("other",plot_order))
-  
-  if(length(plot_color) == 1) {
-    plot_color <- c(rep("red", length(table(list(rta$genus2)))))
-  }
-  
+otu_table <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/rarefied_table.txt"), comment.char="", header=T, sep="\t", fill=T, skip=1) %>% left_join(read.csv(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/taxonomy-call19/taxonomy_forR.csv")), by=c("X.OTU.ID"="Feature.ID"))
+map2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t")# %>% select_(.dots = list(the_id, var1, var2))
 
-  rta$genotype2 <- factor(rta$genotype, levels = c("w1118","park25"))
-  levels(rta$genotype2) <- c("Control", expression(italic(park^25)))
-  rta$sample_type <- factor(rta$sample_type, levels = c("flies", "feces"))
-  
+## make melted OTU table
+otu_table$OTU <- as.character(otu_table$X.OTU.ID)
+otu2 <- otu_table[,c("X.OTU.ID","kingdom","phylum","class","order","family","genus","species","OTU")]
+otu2$OTU <- as.character(otu2$OTU)
+melted_table <- data.frame(OTU_ID=character(),Count=integer(), Sample=character(), stringsAsFactors = F)
+for (i in 2:(dim(otu_table)[2]-7-1)) {
+  rm(new_table)
+  new_table <- data.frame(OTU=as.character(otu_table$OTU),Count=as.integer(otu_table[,i]),Sample=as.character(colnames(otu_table)[i]), stringsAsFactors = F)
+  melted_table <- rbind(melted_table, new_table)
+}
+
+## start merging
+melted_table_no0 <- melted_table %>% filter(Count>-1)
+mt0 <- melted_table_no0 %>% inner_join(otu2, by=c("OTU"="X.OTU.ID"))
+mt0$sample2 <- gsub("\\.","", mt0$Sample)
+mt0$sample2 <- gsub("_","", mt0$sample2)
+map2$sample2 <- gsub("_","",map2$X.SampleID)
+map2$sample2 <- gsub("-","",map2$sample2)
+mt1 <- mt0 %>% inner_join(map2)
+mt2 <- mt1 %>% arrange(phylum, class,order,family,genus,species,OTU)
+mt2$sort_order <- c(1:dim(mt2)[1])
+mt2$class <- paste(mt2$phylum, mt2$class,sep="_")
+mt2$order <- paste(mt2$class, mt2$order,sep="_")
+mt2$family <- paste(mt2$order, mt2$family,sep="_")
+mt2$genus <- paste(mt2$family, mt2$genus,sep="_")
+mt2$species <- paste(mt2$genus, mt2$species,sep="_")
+mt2$OTU <- paste(mt2$species, mt2$OTU,sep="_")
+
+## make the interactive variable
+mt2$twovar <- paste(mt2[,var1], mt2[,var2],sep="-")
+
+## find the rare taxa
+rare_taxa <- mt2 %>% group_by_(.dots = taxonomic_level) %>% summarize(phylum.abun=sum(Count)) %>% mutate(rpa = phylum.abun / sum(phylum.abun)) %>% filter(rpa<=rpa_in_chart) %>% select_(.dots = taxonomic_level) %>% unlist
+rt2 <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames("paste('other')", taxonomic_level))
+
+## find the abundant taxa
+abun_taxa <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) %>% data.frame()
+
+abundant_taxa <- names(table(list(abun_taxa[,paste(taxonomic_level)])))
+
+for(i in 1:length(abundant_taxa)) {
+  try(space_split_vector <- strsplit(abundant_taxa[i], split = " "))
+  try(while (paste(tail(strsplit(tail(space_split_vector[[1]], 1),split = "")[[1]], 2), collapse="") == "__") {
+    space_split_vector[[1]] <- head(space_split_vector[[1]], -1); space_split_vector[[1]]
+  })
+  try(abundant_taxa[i] <- gsub(strsplit(tail(space_split_vector[[1]],1), "__")[[1]][2], pattern = "_",replacement = ""))
+}
+
+abun_taxa <- mt2 %>% group_by_(.dots=list(var1,var2, the_two_var, the_id, taxonomic_level)) %>% filter(get(taxonomic_level)%in%rare_taxa==F) %>% summarise(phylum.abun = sum(Count)) %>% mutate_(.dots = setNames(paste("abundant_taxa"), taxonomic_level)) %>% group_by_(.dots=list(var1,var2, the_two_var, the_id, taxonomic_level))
+
+## merge the two into a new file
+rta <- rt2 %>% bind_rows(abun_taxa) %>% group_by(twovar) %>% mutate(rpa = phylum.abun / read_depth) %>% filter(rpa>0) %>% droplevels()%>%dplyr::mutate_(.dots=setNames("factor(get(taxonomic_level))", taxonomic_level)) #%>% mutate_(.dots=setNames(factor(rta[,paste(taxonomic_level)], levels=c("other",plot_order)), taxonomic_level))
+
+if(length(plot_order) == 1) {
+  plot_order <- abundant_taxa
+}
+
+rta$genus2 <- unlist(rta[,paste0(taxonomic_level)])
+rta$genus2 <- factor(rta$genus2,levels=c("other",plot_order))
+
+if(length(plot_color) == 1) {
+  plot_color <- c(rep("red", length(table(list(rta$genus2)))))
+}
+
+
+rta$genotype2 <- factor(rta$genotype, levels = c("w1118","park25"))
+levels(rta$genotype2) <- c("Control", expression(italic(park^25)))
+rta$sample_type <- factor(rta$sample_type, levels = c("flies", "feces"))
+
 legend_position = "none"
 
 #####
 plot_2016 <- ggplot(rta, aes(x = X.SampleID, y = rpa, fill = genus2)) + 
-    facet_grid(.~genotype2 * sample_type , drop = TRUE, space = "free", scales = "free", labeller = label_parsed) +   
-    facet_wrap(.~ genotype2 * sample_type, strip.position = "bottom", scales = "free_x", nrow = 1, labeller = label_parsed) + 
-    geom_bar(stat = "identity", width = 1) +
-    scale_fill_manual(values=plot_color, labels = c("Other",
-                                                    bquote(paste(italic(C.)," ",italic(variabile))),
-                                                    expression(paste("Enterobacteriaceae")),
-                                                    expression(paste("Enterococcus")),
-                                                    expression(paste("Leuconostoc")),
-                                                    expression(paste(italic(L.)," ",italic(brevis))),
-                                                    expression(paste(italic(Lactobacillus))),
-                                                   "Lactobacillaceae ASVs 1 and 2",
-                                                    expression(paste(italic(Acetobacter)," ASV1")),
-                                                    expression(paste(italic(Acetobacter)," ASV2")),
-                                                    expression(paste(italic(Acetobacter)," ASV3")),
-                                                    expression(paste(italic(Acetobacter)," ASV4"))
-                                                    ), 
-                      name = NULL)+
-    theme_cowplot() + 
-    theme(legend.position = legend_position,
-          axis.text.x = element_blank(),
-          strip.background = element_rect(fill = "white"),
-          legend.text.align = 0) +
-#  guide = guide_legend(label.position = "left") +
-    ylab("Fractional abundance") +
+  facet_grid(.~genotype2 * sample_type , drop = TRUE, space = "free", scales = "free", labeller = label_parsed) +   
+  facet_wrap(.~ genotype2 * sample_type, strip.position = "bottom", scales = "free_x", nrow = 1, labeller = label_parsed) + 
+  geom_bar(stat = "identity", width = 1) +
+  scale_fill_manual(values=plot_color, labels = c("Other",
+                                                  bquote(paste(italic(C.)," ",italic(variabile))),
+                                                  expression(paste("Enterobacteriaceae")),
+                                                  expression(paste("Enterococcus")),
+                                                  expression(paste("Leuconostoc")),
+                                                  expression(paste(italic(L.)," ",italic(brevis))),
+                                                  expression(paste(italic(Lactobacillus))),
+                                                  "Lactobacillaceae ASVs 1 and 2",
+                                                  expression(paste(italic(Acetobacter)," ASV1")),
+                                                  expression(paste(italic(Acetobacter)," ASV2")),
+                                                  expression(paste(italic(Acetobacter)," ASV3")),
+                                                  expression(paste(italic(Acetobacter)," ASV4"))
+  ), 
+  name = NULL)+
+  theme_cowplot() + 
+  theme(legend.position = legend_position,
+        axis.text.x = element_blank(),
+        strip.background = element_rect(fill = "white"),
+        legend.text.align = 0) +
+  #  guide = guide_legend(label.position = "left") +
+  ylab("Fractional abundance") +
   xlab("samples") #+ labs (tag = "A")
 plot_2016
 
@@ -1687,8 +1730,7 @@ plot(taxon_legend)
 ```
 
 ### Figure S8B
-```{r Figure S8B, exercise=F, warning = F, message = F}
-folder_name = paste0(file_path,"/weighted_unifrac")
+```{r FigureS8B, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 var1 = "genotype"
 var2 = "sample_type"
 var1_colors <-c("green","green","black","black")
@@ -1697,166 +1739,214 @@ title_name_add <- NULL
 legend_position = "none"
 var2_line <- c("dotted","solid","dotted","solid")
 
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
-  pc_values <- as.numeric(as.character(pc2[2,]))*100
-  wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
-  
-  uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
-  
-  uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
-  uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
-  
-  var1_table <- table(list(uwmpc_all[,var1]))
-  var2_table <- table(list(uwmpc_all[,var2]))
- 
-  uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_flies","w1118_feces","park25_flies","park25_feces"))
-  levels(uwmpc_all$two_var) <- c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces"))
-  twovar_table <- table(list(uwmpc_all$two_var))
+wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+pc_values <- as.numeric(as.character(pc2[2,]))*100
+wfpc <- wfpc[,1:4] 
+fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+
+uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
+
+uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
+uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
+
+var1_table <- table(list(uwmpc_all[,var1]))
+var2_table <- table(list(uwmpc_all[,var2]))
+
+uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_flies","w1118_feces","park25_flies","park25_feces"))
+levels(uwmpc_all$two_var) <- c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces"))
+twovar_table <- table(list(uwmpc_all$two_var))
 
 plot_w2016 <- ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = NULL) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_line)
+  geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+  scale_color_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
+  scale_fill_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
+  scale_shape_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_shape) + 
+  #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+  #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+  theme(axis.text=element_text(size=12), 
+        panel.background = element_blank(), 
+        axis.line = element_line(), 
+        axis.ticks=element_line(), 
+        axis.title=element_text(size=14),	
+        #           title=element_text(size=16),
+        legend.position=legend_position,
+        plot.title = element_text(size=16, hjust=0))+
+  labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+       y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+       title = NULL) + 
+  stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_line)
 
 plot_w2016
 ```
 
-### Figure S8C
-```{r Figure S8C, exercise=F, warning = F, message = F}
-folder_name = paste0(file_path,"/bray_curtis")
-title_name_add <- NULL
-legend_position <- "none"
-  wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
-  pc_values <- as.numeric(as.character(pc2[2,]))*100
-  wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
-  
-  uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
-  
-  uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
-  uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
-  
-  var1_table <- table(list(uwmpc_all[,var1]))
-  var2_table <- table(list(uwmpc_all[,var2]))
- 
-  uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_flies","w1118_feces","park25_flies","park25_feces"))
-  levels(uwmpc_all$two_var) <- c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces"))
-  twovar_table <- table(list(uwmpc_all$two_var))
+### Figure S8 weighted Unifrac PERMANOVA
+```{r fs8wu, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+flies_weighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/weighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_weighted_dm <- as.dist(flies_weighted[,2:dim(flies_weighted)[2]])
+flies_unifrac_table <- flies_weighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+fig1_Sw_permanova <- adonis(flies_weighted_dm ~ genotype * sample_type, flies_unifrac_table, permutations = 1000)
+fig1_permSW <- tableGrob(round(fig1_Sw_permanova$aov.tab, 2), theme=ttheme_minimal())
+plot(fig1_permSW)
 
-  bc_all <- uwmpc_all
-
-plot_bc2016 <- ggplot(bc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_line)
-plot_bc2016
 ```
 
-### Figure S8D
-```{r Figure S8D, exercise=F, warning = F, message = F}
-folder_name = paste0(file_path,"/unweighted_unifrac")
+### Figure S8C
+```{r FigureS8C, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+var1 = "genotype"
+var2 = "sample_type"
+var1_colors <-c("green","green","black","black")
+var2_shape <- c(0,15,0,15)
+title_name_add <- NULL
+legend_position = "none"
+var2_line <- c("dotted","solid","dotted","solid")
 title_name_add <- NULL
 
-   wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
-  pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
-  pc_values <- as.numeric(as.character(pc2[2,]))*100
-  wfpc <- wfpc[,1:4] 
-  fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
-  
-  uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
-  
-  uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
-  uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
-  
-  var1_table <- table(list(uwmpc_all[,var1]))
-  var2_table <- table(list(uwmpc_all[,var2]))
- 
-  uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_flies","w1118_feces","park25_flies","park25_feces"))
-  
-  levels(uwmpc_all$two_var) <- c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces"))
-  twovar_table <- table(list(uwmpc_all$two_var))
+wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/unweighted_unifrac_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+pc_values <- as.numeric(as.character(pc2[2,]))*100
+wfpc <- wfpc[,1:4] 
+fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+
+uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
+
+uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
+uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
+
+var1_table <- table(list(uwmpc_all[,var1]))
+var2_table <- table(list(uwmpc_all[,var2]))
+
+uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_flies","w1118_feces","park25_flies","park25_feces"))
+
+levels(uwmpc_all$two_var) <- c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces"))
+twovar_table <- table(list(uwmpc_all$two_var))
 
 plot_uw2016 <- ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_line) 
+  geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+  scale_color_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
+  scale_fill_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
+  scale_shape_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_shape) + 
+  #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+  #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+  theme(axis.text=element_text(size=12), 
+        panel.background = element_blank(), 
+        axis.line = element_line(), 
+        axis.ticks=element_line(), 
+        axis.title=element_text(size=14),	
+        #           title=element_text(size=16),
+        legend.position=legend_position,
+        plot.title = element_text(size=16, hjust=0))+
+  labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+       y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+       title = title_name_add) + 
+  stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_line) 
+plot_uw2016
 
 legend_position = "bottom"
 
 plot_wuwlegend <- g_legend(ggplot(uwmpc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
-    geom_point(alpha = 1, size=4) + #, shape=plot_shapes, size=3, col=plot_colors) + 
-    scale_color_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
-    scale_fill_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
-    scale_shape_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_shape) + 
-    #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
-    #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
-    theme(axis.text=element_text(size=12), 
-          panel.background = element_blank(), 
-          axis.line = element_line(), 
-          axis.ticks=element_line(), 
-          axis.title=element_text(size=14),	
-          #           title=element_text(size=16),
-          legend.position=legend_position,
-          plot.title = element_text(size=16, hjust=0))+
-    labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
-         y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
-         title = title_name_add) + 
-    stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_line) + theme(legend.text = element_text(size = 24)) +
-      guides(col = guide_legend(nrow = 3, byrow = T))
-  )
+                             geom_point(alpha = 1, size=4) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+                             scale_color_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
+                             scale_fill_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
+                             scale_shape_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_shape) + 
+                             #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+                             #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+                             theme(axis.text=element_text(size=12), 
+                                   panel.background = element_blank(), 
+                                   axis.line = element_line(), 
+                                   axis.ticks=element_line(), 
+                                   axis.title=element_text(size=14),	
+                                   #           title=element_text(size=16),
+                                   legend.position=legend_position,
+                                   plot.title = element_text(size=16, hjust=0))+
+                             labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+                                  y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+                                  title = title_name_add) + 
+                             stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_line) + theme(legend.text = element_text(size = 24)) +
+                             guides(col = guide_legend(nrow = 3, byrow = T))
+)
 plot(plot_wuwlegend)
 ```
 
+### Figure S8 unweighted Unifrac PERMANOVA
+```{r fs8uu, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+flies_unweighted <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/unweighted_unifrac_distance_matrix/distance-matrix.tsv"), header=T, sep="\t") %>% mutate(X=as.character(X))
+flies_unweighted_dm <- as.dist(flies_unweighted[,2:dim(flies_unweighted)[2]])
+flies_unifrac_table <- flies_unweighted %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+fig1_Suw_permanova <- adonis(flies_unweighted_dm ~ genotype * sample_type, flies_unifrac_table, permutations=1000)
+fig1_permSU <- tableGrob(round(fig1_Suw_permanova$aov.tab, 2), theme=ttheme_minimal())
+plot(fig1_permSU)
+
+
+```
+
+### Figure S8D
+```{r FigureS8D, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+var1 = "genotype"
+var2 = "sample_type"
+var1_colors <-c("green","green","black","black")
+var2_shape <- c(0,15,0,15)
+title_name_add <- NULL
+legend_position = "none"
+var2_line <- c("dotted","solid","dotted","solid")
+title_name_add <- NULL
+legend_position <- "none"
+wfpc <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 9,blank.lines.skip = T, header=F),-2)
+pc2 <- head(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_pcoa_results/ordination.txt"), sep="\t", fill=T, skip = 3, header=F, colClasses = "character"),2)
+pc_values <- as.numeric(as.character(pc2[2,]))*100
+wfpc <- wfpc[,1:4] 
+fut2 <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t", stringsAsFactors = T) %>% dplyr::select(X) %>% mutate(X=as.character(X)) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"),comment.char = "", header=T, sep = "\t"), by=c("X"="X.SampleID"))
+
+uwmpc_all <- wfpc %>% inner_join(fut2, by=c("V1"="X")) %>% mutate(two_var=as.factor(paste0(get(var1),"_",get(var2))))
+
+uwmpc_all[,paste(var1)] <- as.factor(uwmpc_all[,paste(var1)])
+uwmpc_all[,paste(var2)] <- as.factor(uwmpc_all[,paste(var2)])
+
+var1_table <- table(list(uwmpc_all[,var1]))
+var2_table <- table(list(uwmpc_all[,var2]))
+
+uwmpc_all$two_var <- factor(uwmpc_all$two_var, levels = c("w1118_flies","w1118_feces","park25_flies","park25_feces"))
+levels(uwmpc_all$two_var) <- c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces"))
+twovar_table <- table(list(uwmpc_all$two_var))
+
+bc_all <- uwmpc_all
+
+plot_bc2016 <- ggplot(bc_all, aes(x = V2, y = V3, colour=two_var, shape=two_var, fill=two_var))+
+  geom_point(alpha = 1, size=6.25) + #, shape=plot_shapes, size=3, col=plot_colors) + 
+  scale_color_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
+  scale_fill_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var1_colors) + 
+  scale_shape_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_shape) + 
+  #		scale_linetype_manual(name=var2, labels=names(var2_table)[var2_table!=0], values=c(1,2)) +
+  #		scale_fill_manual(name="Legend", values=c("red","black","white")) +
+  theme(axis.text=element_text(size=12), 
+        panel.background = element_blank(), 
+        axis.line = element_line(), 
+        axis.ticks=element_line(), 
+        axis.title=element_text(size=14),	
+        #           title=element_text(size=16),
+        legend.position=legend_position,
+        plot.title = element_text(size=16, hjust=0))+
+  labs(x = paste("PCo1 ( ",round(as.numeric(pc_values[1]),1),"% )",sep=""), 
+       y = paste("PCo2 ( ",round(as.numeric(pc_values[2]),1),"% )",sep=""), 
+       title = title_name_add) + 
+  stat_ellipse(aes(x=V2, y=V3,group=two_var, lty=two_var),            level = .9, show.legend = T, type = "t", geom = "polygon", alpha = 0, inherit.aes=T) +   scale_linetype_manual(name = "", labels=c("Control flies","Control feces",expression(italic(park^25)*" flies"), expression(italic(park^25)*" feces")), values=var2_line)
+plot_bc2016
+```
+
+### Figure S8 bray curtis PERMANOVA
+```{r fs8bc, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
+flies_bc <- read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/feces2/bray_curtis_distance_matrix/distance-matrix.tsv"), header=T, sep="\t")
+flies_bc_dm <- as.dist(flies_bc[,2:dim(flies_bc)[2]])
+flies_unifrac_table <- flies_bc %>% dplyr::select(X) %>% left_join(read.table(url("https://raw.githubusercontent.com/johnchaston/JPCparkTutorial/master/files/call_mapper2.tsv"), comment.char = "", header=T, fill=T, sep="\t"), by=c("X"="X.SampleID")) %>% droplevels()
+fig1_Sb_permanova <- adonis(flies_bc_dm ~ genotype * sample_type, flies_unifrac_table, permutations = 1000)
+fig1_permSB <- tableGrob(round(fig1_Sb_permanova$aov.tab, 2), theme=ttheme_minimal())
+plot(fig1_permSB)
+
+```
+
+
 ### print figure S8
-```{r print Figure S8, exercise=F, warning = F, message = F, eval = F}
+```{r print_Figure_S8, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 jpeg(h=900, w=1100, paste0("gerald_figureS4_8_625.jpg"), units = "px", quality = 0.9, pointsize = 1/3000)
 grid.arrange(	
   plot_2016 + theme(axis.text = element_text(size = 20), axis.title = element_text(size = 24, face = "bold"), text = element_text(size = 40)) + labs(tag = "A", x= "Samples"),
@@ -1865,21 +1955,21 @@ grid.arrange(
   plot_bc2016 + labs(tag = "D") + theme(axis.text = element_text(size = 20), axis.title = element_text(size = 24, face = "bold"), text = element_text(size = 40, face = "bold")),
   plot_wuwlegend,
   taxon_legend,
-#  widths = c(1.5,.5,1),	
-#  heights = c(3,1.5,1.2),	
+  #  widths = c(1.5,.5,1),	
+  #  heights = c(3,1.5,1.2),	
   widths = c(1,1,1),
-heights = c(3,2,.5),
+  heights = c(3,2,.5),
   layout_matrix=rbind(		
     c(1,1,6),
     c(2,3,4),
     c(NA,5,NA)  
-    )
+  )
 )
 dev.off()
 ```
 
 ### print Figure S8 PERMANOVA
-```{r print Figure S8 PERMANOVA, exercise=F, warning = F, message = F, eval = F}
+```{r print_Figure_S8_PERMANOVA, exercise=T, warning = F, message = F, eval = T, exercise.timelimit = 10000}
 getwd()
 jpeg(h=300, w=1600, paste0("permanova_tables_figs4.jpg"), units = "px", quality = 0.9, pointsize = 1/300)
 grid.arrange(	
@@ -1888,20 +1978,8 @@ grid.arrange(
   heights = c(1),	
   layout_matrix=rbind(		
     c(1,2,3)  
-    )
+  )
 )
 dev.off()
 
 ```
-
-### Figure 1C
-```{r Figure_1C, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, exercise=F}
-```
-
-Run Figure 1D statistics
-```{r Figure_1D_stats, message=FALSE, warning=FALSE, exercise=F, paged.print=FALSE}
-```
-
-```{r Figure_2AC, exercise = F, warning =F, message = F, exercise.timelimit = 1000}
-```
-
